@@ -1,5 +1,5 @@
 # PROJE ÖZETİ — Local Drop (local_drop)
-<!-- OZET_META: guncelleme=2026-10-09 22:50 | son_kod_commit=(F8 commit'i, hash §12'de düzeltilecek) | faz=F8 tamam (tüm fazlar kodda bitti; cihaz doğrulamaları §9) -->
+<!-- OZET_META: guncelleme=2026-10-09 23:10 | son_kod_commit=0961095 | faz=F8 tamam (tüm fazlar kodda bitti; cihaz doğrulamaları §9) -->
 
 > **TEK GİRİŞ NOKTASI.** Durum, analiz ve iş başlangıcı buradan yapılır; kodu TARAMA.
 > İş kuralları: `docs/AJAN_IS.md` · Analiz: `docs/AJAN_ANALIZ.md` · Faz görevleri ve test senaryoları: `docs/FAZLAR.md` (yalnız ilgili `## F<n>` başlığı okunur).
@@ -143,7 +143,10 @@ lib/
 
 ## 8. AÇIK BULGULAR (S-n: şüphe, B-n: doğrulanmış)
 
-(yok)
+- S-1: Release imzası yok (`android/key.properties` + `.jks` yok) → appbundle debug imzalı, Play'e yüklenemez. Kullanıcı keystore üretmeli (play_store.md adımları).
+- S-2: Gizlilik politikası URL'si zorunlu ama yayınlanmış sayfa yok (play_store.md §gizlilik maddeleri hazır).
+- S-3: Hiçbir faz cihazda doğrulanmadı (§9 1–9 açık); özellikle FGS/kilitler/MediaStore yalnız Kotlin+cihazda test edilebilir.
+- S-4: `linux/macos/windows` generated plugin dosyaları kirli (F8 shared_preferences); Android'i etkilemez, §4 gereği dokunulmadı.
 
 ## 9. CİHAZDA BEKLEYEN DOĞRULAMALAR
 
@@ -171,7 +174,7 @@ lib/
 | Commit | Faz | Özet |
 |---|---|---|
 | b52ff2e…9f05638 | F0–F7 | … F6 (9828744), F7 sertleştirme (9f05638); hepsi dev + main'de |
-| (bu commit) | F8 | feat(release): ikon, splash, applicationId, onboarding, ayarlar, imza, play_store.md |
+| 0961095 | F8 | feat(release): ikon, splash, applicationId, onboarding, ayarlar, imza, play_store.md |
 
 ## 11. Ortam / cihaz notları
 
@@ -185,4 +188,5 @@ lib/
 ## 12. İŞLEM GÜNLÜĞÜ (her iş 1 satır, en yeni altta)
 <!-- format: YYYY-MM-DD HH:mm | hash/commitlenmedi | iş | kod: dosyalar | test: dosyalar | analyze/test | sonuç -->
 <!-- 2026-10-09 20:33–22:11 | b52ff2e…9f05638 | kurulum, F0–F7 | ayrıntı: §3, §7, §10 | analyze/test: OK (170), kapsam 85,1% -->
-<!-- 2026-10-09 22:50 | (bu commit) | F8 yayın hazırlığı | kod: gradle (applicationId, imza), manifest label, ikon/splash, settings→SharedPreferences, auto_stop_policy, onboarding/settings ekranları, themeMode, play_store.md | test: +12 (182) | analyze/test/appbundle: OK | K15 -->
+<!-- 2026-10-09 22:50 | 0961095 | F8 yayın hazırlığı | kod: gradle (applicationId, imza), manifest label, ikon/splash, settings→SharedPreferences, auto_stop_policy, onboarding/settings ekranları, themeMode, play_store.md | test: +12 (182) | analyze/test/appbundle: OK | K15 -->
+<!-- 2026-10-09 23:10 | (bu commit) | analiz (eksik/çalışmayan) | kod: — | test: — | analyze: 0, test: 182 OK | S-1..S-4; F8 hash düzeltildi -->
