@@ -11,16 +11,22 @@ import '../fakes/fake_network_service.dart';
 
 void main() {
   late Directory tmp;
+  late StorageService storage;
   late FakeNetworkService network;
 
   setUp(() async {
     tmp = await Directory.systemTemp.createTemp('ld_ctrl_');
+    storage = StorageService(Directory('${tmp.path}/r'));
     network = FakeNetworkService();
   });
   tearDown(() => tmp.delete(recursive: true));
 
   Future<ServerController> connected(ServerFactory factory) async {
-    final c = ServerController(network: network, createServer: factory);
+    final c = ServerController(
+      network: network,
+      storage: storage,
+      createServer: factory,
+    );
     network.controller.add(const Connected('192.168.1.20'));
     await Future<void>.delayed(Duration.zero);
     return c;
@@ -30,14 +36,14 @@ void main() {
     'start → running, url ağ IP + port + token, PIN; stop → temiz',
     () async {
       late ServerService server;
-      final c = await connected(() async {
-        return server = ServerService(
-          storage: StorageService(Directory('${tmp.path}/r')),
+      final c = await connected(
+        (s) => server = ServerService(
+          storage: s,
           address: InternetAddress.loopbackIPv4,
           portStart: 0,
           portEnd: 0,
-        );
-      });
+        ),
+      );
 
       await c.start();
       expect(c.status, ServerStatus.running);
@@ -56,7 +62,7 @@ void main() {
 
   test('ServerStartException → error + mesaj, tekrar başlatılabilir', () async {
     final c = await connected(
-      () async => throw const ServerStartException('Port bulunamadı'),
+      (_) => throw const ServerStartException('Port bulunamadı'),
     );
     await c.start();
     expect(c.status, ServerStatus.error);
@@ -70,7 +76,8 @@ void main() {
     var created = false;
     final c = ServerController(
       network: network,
-      createServer: () async {
+      storage: storage,
+      createServer: (_) {
         created = true;
         throw StateError('çağrılmamalı');
       },

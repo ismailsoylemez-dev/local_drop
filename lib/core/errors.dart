@@ -15,3 +15,12 @@ class PathEscapeException implements Exception {
   @override
   String toString() => 'PathEscapeException: $name';
 }
+
+/// Akış [maxBytes] sınırını aştı.
+class FileTooLargeException implements Exception {
+  const FileTooLargeException(this.maxBytes);
+  final int maxBytes;
+
+  @override
+  String toString() => 'FileTooLargeException: >$maxBytes bayt';
+}

@@ -4,14 +4,11 @@ import 'dart:io';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_multipart/shelf_multipart.dart';
 
+import '../../core/errors.dart';
 import '../../core/log.dart';
 import '../../services/storage_service.dart';
 import '../responses.dart';
 import '../server_event.dart';
-
-class _TooLarge implements Exception {
-  const _TooLarge();
-}
 
 /// İstek gövdesini izler. mime 2.1.0 gövde hatasını/erken bitişini yalnız dış
 /// akışa iletir, okunmakta olan parçayı kapatmaz → yazma sonsuza dek bekler.
@@ -115,9 +112,16 @@ class UploadHandler {
           await guard.track(data.part).drain<void>();
           continue;
         }
-        saved.add(await _save(filename, guard.track(data.part)));
+        final file = await storage.saveStream(
+          filename,
+          guard.track(data.part),
+          maxBytes: maxFileBytes,
+        );
+        Log.d('Upload', 'done name=${file.name} bytes=${file.bytes}');
+        onEvent(FileUploaded(file.name, file.bytes));
+        saved.add(file.name);
       }
-    } on _TooLarge {
+    } on FileTooLargeException {
       return _tooLarge();
     } on FileSystemException {
       rethrow;
@@ -130,41 +134,4 @@ class UploadHandler {
 
   Response _tooLarge() =>
       jsonError(HttpStatus.requestEntityTooLarge, 'Dosya çok büyük');
-
-  Future<String> _save(String filename, Stream<List<int>> data) async {
-    final name = storage.reserveUnique(filename);
-    final part = storage.partFileFor(name);
-    final sink = part.openWrite();
-    var bytes = 0;
-    try {
-      await sink.addStream(
-        data.map((chunk) {
-          bytes += chunk.length;
-          if (bytes > maxFileBytes) throw const _TooLarge();
-          return chunk;
-        }),
-      );
-      await sink.close();
-      await part.rename(storage.resolve(name).path);
-    } catch (_) {
-      await _discard(sink, part);
-      rethrow;
-    } finally {
-      storage.release(name);
-    }
-    Log.d('Upload', 'done name=$name bytes=$bytes');
-    onEvent(FileUploaded(name, bytes));
-    return name;
-  }
-
-  Future<void> _discard(IOSink sink, File part) async {
-    try {
-      await sink.close();
-    } catch (_) {}
-    try {
-      if (await part.exists()) await part.delete();
-    } catch (e) {
-      Log.d('Upload', '.part silinemedi: $e');
-    }
-  }
 }

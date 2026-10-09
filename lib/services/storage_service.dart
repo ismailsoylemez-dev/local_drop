@@ -4,6 +4,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../core/constants.dart';
 import '../core/errors.dart';
+import '../core/log.dart';
 import '../core/safe_name.dart';
 
 typedef StoredFile = ({String name, int size, DateTime modified});
@@ -74,5 +75,57 @@ class StorageService {
     }
     result.sort((a, b) => a.name.compareTo(b.name));
     return result;
+  }
+
+  /// Akışı `.part`'a yazar, bitince benzersiz adla rename eder. Hata, iptal
+  /// veya [maxBytes] aşımında ([FileTooLargeException]) `.part` silinir.
+  Future<({String name, int bytes})> saveStream(
+    String name,
+    Stream<List<int>> data, {
+    int? maxBytes,
+  }) async {
+    await ensureExists();
+    final unique = reserveUnique(name);
+    final part = partFileFor(unique);
+    final sink = part.openWrite();
+    var bytes = 0;
+    try {
+      await sink.addStream(
+        data.map((chunk) {
+          bytes += chunk.length;
+          if (maxBytes != null && bytes > maxBytes) {
+            throw FileTooLargeException(maxBytes);
+          }
+          return chunk;
+        }),
+      );
+      await sink.close();
+      await part.rename(resolve(unique).path);
+    } catch (_) {
+      await _discard(sink, part);
+      rethrow;
+    } finally {
+      release(unique);
+    }
+    return (name: unique, bytes: bytes);
+  }
+
+  Future<void> _discard(IOSink sink, File part) async {
+    try {
+      await sink.close();
+    } catch (_) {}
+    try {
+      if (await part.exists()) await part.delete();
+    } catch (e) {
+      Log.d('Storage', '.part silinemedi: $e');
+    }
+  }
+
+  /// Güvenli adla kökteki dosyayı siler; yoksa false.
+  Future<bool> delete(String name) async {
+    final file = resolve(name, strict: true);
+    if (!await file.exists()) return false;
+    await file.delete();
+    return true;
   }
 }

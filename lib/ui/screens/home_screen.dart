@@ -1,69 +1,93 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants.dart';
-import '../../services/network_service.dart';
+import '../../server/server_event.dart';
 import '../../state/server_controller.dart';
+import '../widgets/files_panel.dart';
+import '../widgets/status_card.dart';
+import '../widgets/text_banner.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  /// Bu genişlik ve üstünde QR ile liste yan yana.
+  static const double wideBreakpoint = 600;
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  StreamSubscription<ServerEvent>? _sub;
+
+  @override
+  void initState() {
+    super.initState();
+    _sub = context.read<ServerController>().events.listen(_onEvent);
+  }
+
+  @override
+  void dispose() {
+    _sub?.cancel();
+    super.dispose();
+  }
+
+  void _onEvent(ServerEvent event) {
+    if (!mounted) return;
+    final message = switch (event) {
+      FileUploaded(:final name) => '$name alındı',
+      ServerErrorEvent(:final message) => message,
+      FileDeleted() || TextReceived() => null,
+    };
+    if (message == null) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
 
   @override
   Widget build(BuildContext context) {
-    final controller = context.watch<ServerController>();
-    final textTheme = Theme.of(context).textTheme;
-    final networkText = switch (controller.network) {
-      null => 'Ağ kontrol ediliyor…',
-      Connected(:final ip) => 'IP: $ip',
-      NoNetwork() => 'Ağ bağlantısı yok',
-    };
-
-    // TODO(F5): QR + durum kartı.
-    final List<Widget> statusWidgets = switch (controller.status) {
-      ServerStatus.running => [
-        Text('Sunucu çalışıyor', style: textTheme.titleMedium),
-        const SizedBox(height: 8),
-        SelectableText(controller.url ?? '', textAlign: TextAlign.center),
-        const SizedBox(height: 8),
-        Text('PIN: ${controller.pin ?? ''}', style: textTheme.titleLarge),
-        const SizedBox(height: 16),
-        OutlinedButton(onPressed: controller.stop, child: const Text('Durdur')),
-      ],
-      ServerStatus.starting => [
-        Text('Başlatılıyor…', style: textTheme.titleMedium),
-        const SizedBox(height: 16),
-        const CircularProgressIndicator(),
-      ],
-      ServerStatus.stopped || ServerStatus.error => [
-        Text('Sunucu kapalı', style: textTheme.titleMedium),
-        if (controller.errorMessage case final message?) ...[
-          const SizedBox(height: 8),
-          Text(
-            message,
-            style: textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.error,
-            ),
-          ),
-        ],
-        const SizedBox(height: 8),
-        Text(networkText, style: textTheme.bodyMedium),
-        const SizedBox(height: 16),
-        FilledButton(
-          onPressed: controller.canStart ? controller.start : null,
-          child: const Text('Başlat'),
-        ),
-      ],
-    };
+    final lastText = context.select<ServerController, String?>(
+      (c) => c.lastText,
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text(AppConstants.appTitle)),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: statusWidgets,
-          ),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final banner = lastText == null ? null : TextBanner(text: lastText);
+            if (constraints.maxWidth >= HomeScreen.wideBreakpoint) {
+              return Row(
+                key: const Key('layout-wide'),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(8),
+                      child: Column(children: [?banner, const StatusCard()]),
+                    ),
+                  ),
+                  const Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.all(8),
+                      child: FilesPanel(),
+                    ),
+                  ),
+                ],
+              );
+            }
+            return SingleChildScrollView(
+              key: const Key('layout-narrow'),
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                children: [?banner, const StatusCard(), const FilesPanel()],
+              ),
+            );
+          },
         ),
       ),
     );

@@ -12,3 +12,12 @@ String formatSize(int bytes) {
   }
   return '${value.toStringAsFixed(1).replaceAll('.', ',')} ${_units[unit]}';
 }
+
+String _two(int n) => n.toString().padLeft(2, '0');
+
+/// Yerel saatle `gg.aa.yyyy ss:dd`.
+String formatDate(DateTime time) {
+  final t = time.toLocal();
+  return '${_two(t.day)}.${_two(t.month)}.${t.year} '
+      '${_two(t.hour)}:${_two(t.minute)}';
+}
