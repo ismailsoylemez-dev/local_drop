@@ -42,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
       FileUploaded(:final name) => '$name alındı',
       ServerErrorEvent(:final message) => message,
       NetworkChanged() => 'Ağ değişti, QR yenilendi',
+      AutoStopped() => 'Uzun süre transfer olmadı, sunucu kapatıldı',
       FileDeleted() || TextReceived() => null,
     };
     if (message == null) return;

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 import '../core/constants.dart';
 import '../core/errors.dart';
@@ -14,6 +14,7 @@ import '../services/server_service.dart';
 import '../services/settings_service.dart';
 import '../services/storage_service.dart';
 import '../services/storage_target.dart';
+import 'auto_stop_policy.dart';
 import 'network_restart_policy.dart';
 
 enum ServerStatus { stopped, starting, running, error }
@@ -39,7 +40,8 @@ class ServerController extends ChangeNotifier {
     this.background,
     this.settings,
     this.mediaStore,
-  }) {
+    DateTime Function()? clock,
+  }) : _clock = clock ?? DateTime.now {
     _networkSub = network.watch().listen((result) {
       _network = result;
       _restartPolicy.onNetwork(result);
@@ -57,6 +59,7 @@ class ServerController extends ChangeNotifier {
   final BackgroundService? background;
   final SettingsService? settings;
   final MediaStoreAdapter? mediaStore;
+  final DateTime Function() _clock;
   StreamSubscription<BackgroundEvent>? _backgroundSub;
   late final StreamSubscription<NetworkResult> _networkSub;
   final _events = StreamController<ServerEvent>.broadcast();
@@ -76,6 +79,11 @@ class ServerController extends ChangeNotifier {
   late final _restartPolicy = NetworkRestartPolicy(
     restart: (ip) => unawaited(_restartForNetwork(ip)),
   );
+  late final _autoStop = AutoStopPolicy(
+    timeout: () => Duration(minutes: settings?.autoStopMinutes ?? 0),
+    now: _clock,
+  );
+  Timer? _autoStopTimer;
 
   /// Süren upload/download sayısı (Durdur onayı için).
   int get activeTransfers => _restartPolicy.activeTransfers;
@@ -115,14 +123,20 @@ class ServerController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final server = _server ??= createServer(storage, _restartPolicy);
-      _serverSub ??= server.events.listen(_onServerEvent);
+      // Her başlatmada yeni sunucu: port ayarı değişmiş olabilir.
+      await _disposeServer();
+      final server = _server = createServer(
+        storage,
+        MultiTransferObserver([_restartPolicy, _autoStop]),
+      );
+      _serverSub = server.events.listen(_onServerEvent);
       final port = await server.start();
       _url =
           'http://${network.ip}:$port/?${AppConstants.tokenQueryParam}=${server.token}';
       _pin = server.pin;
       _status = ServerStatus.running;
       _restartPolicy.serverStarted(network.ip);
+      _startAutoStop();
       await _startBackground('${network.ip}:$port');
     } on ServerStartException catch (e) {
       _fail(e.message, e);
@@ -181,6 +195,36 @@ class ServerController extends ChangeNotifier {
     }
   }
 
+  ThemeMode get themeMode => settings?.themeMode ?? ThemeMode.system;
+
+  /// Ayar servisi yoksa (testler) tanıtım atlanır.
+  bool get onboardingDone => settings?.onboardingDone ?? true;
+
+  int get port => settings?.port ?? AppConstants.portRangeStart;
+
+  int get autoStopMinutes => settings?.autoStopMinutes ?? 0;
+
+  Future<void> completeOnboarding() async {
+    await settings?.setOnboardingDone();
+    _notify();
+  }
+
+  Future<void> setThemeMode(ThemeMode value) async {
+    await settings?.setThemeMode(value);
+    _notify();
+  }
+
+  /// Bir sonraki başlatmada geçerli olur.
+  Future<void> setPort(int value) async {
+    await settings?.setPort(value);
+    _notify();
+  }
+
+  Future<void> setAutoStopMinutes(int value) async {
+    await settings?.setAutoStopMinutes(value);
+    _notify();
+  }
+
   Future<void> setSaveLocation(SaveLocation value) async {
     final s = settings;
     if (s == null) return;
@@ -213,7 +257,35 @@ class ServerController extends ChangeNotifier {
     _notify();
   }
 
+  Future<void> _disposeServer() async {
+    await _serverSub?.cancel();
+    _serverSub = null;
+    final old = _server;
+    _server = null;
+    await old?.dispose();
+  }
+
+  void _startAutoStop() {
+    _autoStop.serverStarted();
+    _autoStopTimer?.cancel();
+    _autoStopTimer = Timer.periodic(
+      AppConstants.autoStopCheckInterval,
+      (_) => unawaited(checkAutoStop()),
+    );
+  }
+
+  /// Zamanlayıcıdan çağrılır; testler doğrudan çağırabilir.
+  Future<void> checkAutoStop() async {
+    if (_status != ServerStatus.running || !_autoStop.shouldStop()) return;
+    Log.d('Server', 'auto-stop: ${settings?.autoStopMinutes} dk transfer yok');
+    await stop();
+    if (!_events.isClosed) _events.add(const AutoStopped());
+  }
+
   Future<void> stop() async {
+    _autoStopTimer?.cancel();
+    _autoStopTimer = null;
+    _autoStop.serverStopped();
     _restartPolicy.serverStopped();
     await _server?.stop();
     try {
@@ -236,7 +308,7 @@ class ServerController extends ChangeNotifier {
         _notify();
       case FileUploaded() || FileDeleted():
         unawaited(refreshFiles());
-      case ServerErrorEvent() || NetworkChanged():
+      case ServerErrorEvent() || NetworkChanged() || AutoStopped():
         break;
     }
     if (!_events.isClosed) _events.add(event);
@@ -288,6 +360,7 @@ class ServerController extends ChangeNotifier {
     _disposed = true;
     _networkSub.cancel();
     _backgroundSub?.cancel();
+    _autoStopTimer?.cancel();
     _serverSub?.cancel();
     _server?.dispose();
     _events.close();

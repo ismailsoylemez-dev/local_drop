@@ -18,7 +18,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" tools:node="remove" />
 
     <application
-        android:label="local_drop"
+        android:label="Local Drop"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

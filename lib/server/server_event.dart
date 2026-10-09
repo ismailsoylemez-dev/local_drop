@@ -29,3 +29,8 @@ final class NetworkChanged extends ServerEvent {
   const NetworkChanged(this.ip);
   final String ip;
 }
+
+/// Uzun süre transfer olmadığı için sunucu kendiliğinden kapandı.
+final class AutoStopped extends ServerEvent {
+  const AutoStopped();
+}

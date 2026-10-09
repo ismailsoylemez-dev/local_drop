@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'core/constants.dart';
+import 'state/server_controller.dart';
 import 'ui/screens/home_screen.dart';
+import 'ui/screens/onboarding_screen.dart';
 
 class LocalDropApp extends StatelessWidget {
   const LocalDropApp({super.key});
@@ -10,8 +13,16 @@ class LocalDropApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = context.select<ServerController, ThemeMode>(
+      (c) => c.themeMode,
+    );
+    final onboardingDone = context.select<ServerController, bool>(
+      (c) => c.onboardingDone,
+    );
+
     return MaterialApp(
       title: AppConstants.appTitle,
+      themeMode: themeMode,
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: _seed),
@@ -23,7 +34,7 @@ class LocalDropApp extends StatelessWidget {
           brightness: Brightness.dark,
         ),
       ),
-      home: const HomeScreen(),
+      home: onboardingDone ? const HomeScreen() : const OnboardingScreen(),
     );
   }
 }

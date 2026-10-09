@@ -10,7 +10,7 @@ import 'fake_network_service.dart';
 /// Durumu doğrudan ayarlanan controller (widget testleri). Dosya sistemi ve
 /// ağ kullanmaz; çağrıları kaydeder.
 class StubController extends ServerController {
-  StubController()
+  StubController({super.settings})
     : super(
         network: FakeNetworkService(),
         storage: StorageService(Directory('stub-yok')),

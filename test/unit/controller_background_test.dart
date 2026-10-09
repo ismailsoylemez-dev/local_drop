@@ -7,6 +7,7 @@ import 'package:local_drop/services/settings_service.dart';
 import 'package:local_drop/services/storage_service.dart';
 import 'package:local_drop/services/storage_target.dart';
 import 'package:local_drop/state/server_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../fakes/fake_background_service.dart';
 import '../fakes/fake_network_service.dart';
@@ -32,7 +33,8 @@ void main() {
   setUp(() async {
     tmp = await Directory.systemTemp.createTemp('ld_bg_');
     bg = FakeBackgroundService();
-    settings = SettingsService(File('${tmp.path}/settings.json'));
+    SharedPreferences.setMockInitialValues({});
+    settings = await SettingsService.load();
   });
   tearDown(() => tmp.delete(recursive: true));
 

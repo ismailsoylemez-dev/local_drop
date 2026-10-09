@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'app.dart';
@@ -19,14 +16,8 @@ import 'state/server_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final docs = await getApplicationDocumentsDirectory();
   final storage = await StorageService.appDefault();
-  final settings = SettingsService(
-    File(
-      '${docs.path}${Platform.pathSeparator}${AppConstants.settingsFileName}',
-    ),
-  );
-  await settings.load();
+  final settings = await SettingsService.load();
 
   const device = NativeDeviceChannel();
   final transfers = WakelockPolicy(device);
@@ -46,9 +37,12 @@ Future<void> main() async {
             settings: settings,
             mediaStore: device,
             background: ForegroundBackgroundService(),
-            createServer: (s, restart) => ServerService(
+            // Port ayarı her başlatmada okunur (sunucu yeniden oluşturulur).
+            createServer: (s, observer) => ServerService(
               storage: s,
-              transfers: MultiTransferObserver([transfers, restart]),
+              portStart: settings.port,
+              portEnd: settings.port + AppConstants.portRangeSize,
+              transfers: MultiTransferObserver([transfers, observer]),
               target: target,
             ),
           ),

@@ -63,8 +63,15 @@ abstract final class AppConstants {
   /// İndirilenler seçiliyse dosyaların gittiği alt klasör: Download/LocalDrop.
   static const String downloadsSubfolder = 'LocalDrop';
 
-  /// Ayarların tutulduğu dosya (uygulama belgeleri altında).
-  static const String settingsFileName = 'settings.json';
+  /// Kullanıcının seçebileceği başlangıç portu sınırları (aralık +10).
+  static const int minUserPort = 1024;
+  static const int maxUserPort = 65525;
+  static const int portRangeSize = portRangeEnd - portRangeStart;
+
+  /// Otomatik durdurma: transfer olmadan geçen süre (dk); 0 = kapalı.
+  static const int defaultAutoStopMinutes = 15;
+  static const List<int> autoStopOptions = [0, 5, 15, 30, 60];
+  static const Duration autoStopCheckInterval = Duration(seconds: 30);
 
   /// Ön plan servisi bildirimi.
   static const int fgsServiceId = 256;
