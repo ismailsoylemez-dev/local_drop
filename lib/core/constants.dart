@@ -33,6 +33,20 @@ abstract final class AppConstants {
   /// Yüklenmekte olan dosyanın geçici uzantısı.
   static const String partExtension = '.part';
 
+  /// Alınan dosyaların uygulama belgeleri altındaki klasörü.
+  static const String receivedDirName = 'received';
+
+  /// Dosya adı üst sınırı (karakter, uzantı dahil) ve boş ad yerine kullanılan ad.
+  static const int maxNameLength = 200;
+  static const String fallbackFileName = 'dosya';
+
+  /// Token'ın taşındığı query parametresi ve cookie adı.
+  static const String tokenQueryParam = 't';
+  static const String tokenCookieName = 'ld_token';
+
+  /// /login form gövdesi üst sınırı.
+  static const int loginBodyMaxBytes = 1024;
+
   /// Log öneki: [LD/<alan>].
   static const String logPrefix = 'LD';
 

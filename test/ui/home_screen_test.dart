@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:local_drop/app.dart';
@@ -7,15 +5,7 @@ import 'package:local_drop/services/network_service.dart';
 import 'package:local_drop/state/server_controller.dart';
 import 'package:provider/provider.dart';
 
-class FakeNetworkService extends NetworkService {
-  final controller = StreamController<NetworkResult>();
-
-  @override
-  Stream<NetworkResult> watch() => controller.stream;
-
-  @override
-  Future<NetworkResult> current() async => const NoNetwork();
-}
+import '../fakes/fake_network_service.dart';
 
 void main() {
   late FakeNetworkService network;
@@ -30,9 +20,8 @@ void main() {
     );
   }
 
-  FilledButton startButton(WidgetTester tester) => tester.widget(
-    find.widgetWithText(FilledButton, 'Başlat'),
-  );
+  FilledButton startButton(WidgetTester tester) =>
+      tester.widget(find.widgetWithText(FilledButton, 'Başlat'));
 
   testWidgets('ana ekran: başlık, durum metni ve Başlat butonu', (
     tester,

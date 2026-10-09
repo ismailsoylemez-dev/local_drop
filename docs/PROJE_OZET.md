@@ -1,5 +1,5 @@
 # PROJE ÖZETİ — Local Drop (local_drop)
-<!-- OZET_META: guncelleme=2026-10-09 20:43 | son_kod_commit=(F2 commit'i, hash §12'de düzeltilecek) | faz=F2 tamam, F3 bekliyor -->
+<!-- OZET_META: guncelleme=2026-10-09 20:56 | son_kod_commit=(F3 commit'i, hash §12'de düzeltilecek) | faz=F3 tamam, F4 bekliyor -->
 
 > **TEK GİRİŞ NOKTASI.** Durum, analiz ve iş başlangıcı buradan yapılır; kodu TARAMA.
 > İş kuralları: `docs/AJAN_IS.md` · Analiz: `docs/AJAN_ANALIZ.md` · Faz görevleri ve test senaryoları: `docs/FAZLAR.md` (yalnız ilgili `## F<n>` başlığı okunur).
@@ -44,7 +44,10 @@ lib/
   ui/        screens/, widgets/
 ```
 - UI yalnız `ServerController`'ı okur; servisleri doğrudan çağırmaz.
-- Sunucu → UI olayları: `Stream<ServerEvent>` (uploaded, deleted, textReceived, error).
+- Sunucu → UI olayları: `Stream<ServerEvent>` (FileUploaded, FileDeleted, TextReceived, ServerErrorEvent) — ServerService.events → ServerController.events.
+- İstek hattı: errorMiddleware (500 JSON) → authMiddleware (`?t=`/cookie; `/login` muaf; tokensız `GET /` → 302 /login) → shelf_router.
+- Upload: `_BodyGuard` gövdeyi izler; bağlantı koparsa aktif parça hatayla kapanır (mime 2.1.0 bunu yapmıyor, yoksa `.part` asılı kalır).
+- Geçici dosya: `.<ad>.part` (safeName noktayla başlamaz → gerçek adla çakışmaz). Eşzamanlı aynı ad: `StorageService.reserveUnique`.
 - Tüm dosya sistemi yolları `StorageService.resolve(name)` üzerinden; kök dışına çıkan yol = istisna.
 
 ## 3. Dosya haritası
@@ -53,15 +56,36 @@ lib/
 |---|---|---|
 | lib/main.dart | 15 | runApp + ChangeNotifierProvider<ServerController(network: NetworkService())> |
 | lib/app.dart | 29 | LocalDropApp: MaterialApp, M3, seed teal, light/dark |
-| lib/core/constants.dart | 41 | AppConstants (§5) |
+| lib/core/constants.dart | 55 | AppConstants (§5) |
+| lib/core/errors.dart | 17 | ServerStartException, PathEscapeException |
+| lib/core/safe_name.dart | 46 | safeName, splitExtension, uniqueName (saf) |
+| lib/core/secrets.dart | 32 | generateToken, generatePin, constantTimeEquals |
 | lib/core/lan_ip.dart | 42 | IfaceAddress record; saf `pickLanIp(list, preferred:)` |
 | lib/core/log.dart | 20 | Log.d (kDebugMode), Log.mask |
+| lib/server/responses.dart | 15 | jsonOk/jsonError, html/json başlıkları |
+| lib/server/server_event.dart | 25 | sealed ServerEvent |
+| lib/server/auth_middleware.dart | 51 | authMiddleware, tokenCookie, readCookie |
+| lib/server/router.dart | 69 | errorMiddleware, buildHandler (route tablosu) |
+| lib/server/handlers/login_handler.dart | 60 | GET/POST /login (PIN → cookie) |
+| lib/server/handlers/files_handler.dart | 74 | list, download (stream, filename*), delete |
+| lib/server/handlers/upload_handler.dart | 170 | multipart → .part → rename; limit 413; _BodyGuard |
+| lib/services/server_service.dart | 87 | shelf_io.serve, port aralığı, token/PIN, events, stop/dispose |
+| lib/services/storage_service.dart | 78 | root, resolve(strict), partFileFor, reserveUnique/release, list |
 | lib/services/network_service.dart | 91 | sealed NetworkResult (Connected/NoNetwork); NetworkService.current()/watch() (distinct, enjekte edilebilir kaynaklar) |
-| lib/state/server_controller.dart | 56 | ServerStatus; status/url/pin/errorMessage; network + canStart (watch dinler); start/stop stub |
-| lib/ui/screens/home_screen.dart | 40 | "Sunucu kapalı" + ağ metni (IP / Ağ bağlantısı yok) + Başlat (ağ yoksa pasif) |
-| test/ui/home_screen_test.dart | 64 | widget (FakeNetworkService): başlık, NoNetwork→pasif, Connected→IP |
+| lib/state/server_controller.dart | 104 | ServerStatus; network+canStart; start (ServerFactory enjekte) → url/pin; stop; events |
+| lib/ui/screens/home_screen.dart | 71 | kapalı: ağ metni + Başlat; starting: progress; running: URL (seçilebilir) + PIN + Durdur; error: mesaj |
+| test/fakes/fake_network_service.dart | 13 | StreamController'lı sahte ağ |
+| test/ui/home_screen_test.dart | 53 | widget (FakeNetworkService): başlık, NoNetwork→pasif, Connected→IP |
 | test/unit/pick_lan_ip_test.dart | 64 | IP seçimi (9) |
 | test/unit/network_service_test.dart | 35 | watch distinct, getWifiIP hata fallback |
+| test/unit/safe_name_test.dart | 55 | safeName (9) |
+| test/unit/unique_name_test.dart | 24 | uniqueName (5) |
+| test/unit/secrets_test.dart | 22 | token/PIN/constantTimeEquals |
+| test/unit/server_controller_test.dart | 85 | start/stop/hata/ağ yok (loopback) |
+| test/server/handler_test_utils.dart | 76 | HandlerFixture, multipart gövde |
+| test/server/auth_test.dart | 87 | 401/cookie/login (9) |
+| test/server/files_handler_test.dart | 139 | liste/indir/sil/upload/yol geçişi (12) |
+| test/integration/server_roundtrip_test.dart | 238 | 50 MB, (1), kopma, 413, 5 eşzamanlı, port dolu, token yenileme |
 | test/unit/log_test.dart | 12 | mask |
 
 ## 4. Değişmez kurallar
@@ -89,6 +113,9 @@ lib/
 | Ağ yoklama | 3 sn |
 | Mobil arayüz işaretleri | `rmnet`, `ccmni` (ad içinde geçerse elenir) |
 | Kısmi dosya uzantısı | `.part` |
+| Dosya adı | ≤200 karakter (rune), boşsa `dosya` |
+| Token taşıma | `?t=` / cookie `ld_token` (HttpOnly, SameSite=Strict, Path=/) |
+| /login gövde | ≤1024 B |
 | Log öneki | `[LD/<alan>]` (debugPrint, yalnız kDebugMode) |
 
 ## 6. Özellik durumu
@@ -97,7 +124,7 @@ lib/
 |---|---|---|---|
 | İskelet + Provider (F1) | ✅ | ✅ | ⏳ |
 | IP tespiti (F2) | ✅ | ✅ | ⏳ |
-| HTTP sunucu + token (F3) | ⏳ | ⏳ | ⏳ |
+| HTTP sunucu + token (F3) | ✅ | ✅ | ⏳ |
 | Web arayüzü (F4) | ⏳ | ⏳ | ⏳ |
 | Mobil arayüz (F5) | ⏳ | ⏳ | ⏳ |
 | Arka plan + depolama (F6) | ⏳ | ⏳ | ⏳ |
@@ -111,6 +138,8 @@ lib/
 - K3: Token zorunlu; QR'a gömülü. PIN yalnız QR okutulamayan durum için.
 - K4: Alınan dosyalar F3–F5'te uygulama klasöründe; F6'da Download/LocalDrop (MediaStore). MANAGE_EXTERNAL_STORAGE kullanılmaz.
 - K6: IP kaynağı = `NetworkInterface.list` (arayüz adıyla); `getWifiIP()` yalnız `preferred` ipucu. Neden: getWifiIP konum izni istemiyor ama Android 12+'da aktif ağı (Wi-Fi kapalıyken mobil veri) döndürüyor; arayüz adı olmadan mobil veri elenemez. Konum izni istenmez.
+- K7: indirme/silmede ad `safeName(ad) == ad` değilse 400 (düzeltilmez); upload'da ad temizlenir. Bozuk %-kodlu URL'yi shelf zaten Request oluştururken reddeder.
+- K8: T3 içerik doğrulaması sha256 yerine deterministik üreteçle bayt bayt karşılaştırma (crypto paketi eklememek için; daha sıkı).
 - K5 (F6'da kesinleşecek): FGS türü adayı `dataSync` (Android 15 süre limiti → onTimeout'ta sunucu kapanır + bildirim).
 
 ## 8. AÇIK BULGULAR (S-n: şüphe, B-n: doğrulanmış)
@@ -125,6 +154,17 @@ lib/
 2. F2: Wi-Fi açık → ekranda `IP: 192.168.x.x`; log `[LD/Net] ip=192.168...`.
 3. F2: Wi-Fi kapat → ≤3 sn içinde "Ağ bağlantısı yok", Başlat pasif; log `[LD/Net] no-network`.
 4. F2: Hotspot aç (Wi-Fi kapalı) → 192.168.43.1 benzeri adres (MIUI'de farklı alt ağ olabilir).
+5. F3: Başlat → log `[LD/Server] started 0.0.0.0:8080 token=ab**`; ekranda URL + PIN.
+6. F3: 1 GB upload sırasında `adb shell dumpsys meminfo com.example.local_drop` → RAM 1 GB artmıyor.
+7. F3 T4 (PC PowerShell; `<IP>:<PORT>`, `<T>` ekrandan):
+   ```powershell
+   curl.exe -s -o NUL -w "%{http_code}`n" "http://<IP>:<PORT>/api/files"                  # 401
+   curl.exe -s "http://<IP>:<PORT>/api/files?t=<T>"                                        # []
+   curl.exe -s -F "file=@C:\temp\test.zip" "http://<IP>:<PORT>/api/upload?t=<T>"          # 200
+   curl.exe -s -o C:\temp\geri.zip "http://<IP>:<PORT>/api/download/test.zip?t=<T>"
+   (Get-FileHash C:\temp\test.zip).Hash -eq (Get-FileHash C:\temp\geri.zip).Hash          # True
+   ```
+8. F3: Tarayıcıda `http://<IP>:<PORT>/login` → PIN → `/` açılıyor.
 
 ## 10. COMMIT GÜNLÜĞÜ (eski → yeni)
 
@@ -133,7 +173,8 @@ lib/
 | b52ff2e | F0 | chore: ilk commit + ajan dokumanlari (repo, dev branch, .gitignore) |
 | e3e5df7, 6582d22 | — | GitHub main birleştirme (README 1 satır) |
 | 1375142 | F1 | feat(app): iskelet, Provider, sabitler, log (origin/dev'e push edildi) |
-| (bu commit) | F2 | feat(net): IP tespiti + ağ durumu akışı |
+| d3d42d4 | F2 | feat(net): IP tespiti + ağ durumu akışı (dev + main push) |
+| (bu commit) | F3 | feat(server): shelf sunucu, token/PIN, upload/download/delete |
 
 ## 11. Ortam / cihaz notları
 
@@ -149,4 +190,5 @@ lib/
 <!-- 2026-10-09 20:40 | commitlenmedi | docs/kurulum | kod: yok | özet + AJAN_IS + AJAN_ANALIZ + FAZLAR oluşturuldu -->
 <!-- 2026-10-09 20:33 | b52ff2e | F0 repo kurulumu | kod: .gitignore (+imza/ajan satırları), CLAUDE.md (ignore) | test: yok | analyze/test: — | dev branch, ilk commit; platform klasörleri + pubspec.lock + .metadata da (değiştirilmeden) eklendi, temiz ağaç için -->
 <!-- 2026-10-09 20:38 | 1375142 | F1 iskelet | kod: main.dart, app.dart, core/constants.dart, core/log.dart, state/server_controller.dart, ui/screens/home_screen.dart, README; widget_test.dart silindi | test: home_screen_test(+1), log_test(+2) | analyze/test: OK | demo kaldırıldı, Provider iskeleti kuruldu -->
-<!-- 2026-10-09 20:43 | (bu commit) | F2 ağ servisi | kod: core/lan_ip.dart, services/network_service.dart, state/server_controller.dart, ui/screens/home_screen.dart, core/constants.dart, main.dart | test: pick_lan_ip_test(+9), network_service_test(+2), home_screen_test(+2) | analyze/test: OK (16) | K6 kararı; manifest değişmedi -->
+<!-- 2026-10-09 20:43 | d3d42d4 | F2 ağ servisi | kod: core/lan_ip.dart, services/network_service.dart, state/server_controller.dart, ui/screens/home_screen.dart, core/constants.dart, main.dart | test: pick_lan_ip_test(+9), network_service_test(+2), home_screen_test(+2) | analyze/test: OK (16) | K6 kararı; manifest değişmedi -->
+<!-- 2026-10-09 20:56 | (bu commit) | F3 HTTP sunucu | kod: core/{errors,safe_name,secrets,constants}, server/*, services/{server,storage}_service, state/server_controller, ui/home_screen | test: safe_name(+9) unique_name(+5) secrets(+3) server_controller(+3) auth(+9) files_handler(+12) roundtrip(+7) | analyze/test: OK (64) | mime kopma hatası _BodyGuard ile çözüldü; K7, K8 -->
