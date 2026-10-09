@@ -47,6 +47,12 @@ abstract final class AppConstants {
   /// /login form gövdesi üst sınırı.
   static const int loginBodyMaxBytes = 1024;
 
+  /// PC'den telefona gönderilen metnin üst sınırı (UTF-8 bayt).
+  static const int maxTextBytes = 64 * 1024;
+
+  /// Web arayüzünün dosya listesini yenileme aralığı (ms).
+  static const int webListRefreshMs = 5000;
+
   /// Log öneki: [LD/<alan>].
   static const String logPrefix = 'LD';
 

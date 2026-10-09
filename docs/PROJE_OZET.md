@@ -1,5 +1,5 @@
 # PROJE ÖZETİ — Local Drop (local_drop)
-<!-- OZET_META: guncelleme=2026-10-09 20:56 | son_kod_commit=(F3 commit'i, hash §12'de düzeltilecek) | faz=F3 tamam, F4 bekliyor -->
+<!-- OZET_META: guncelleme=2026-10-09 21:02 | son_kod_commit=(F4 commit'i, hash §12'de düzeltilecek) | faz=F4 tamam, F5 bekliyor -->
 
 > **TEK GİRİŞ NOKTASI.** Durum, analiz ve iş başlangıcı buradan yapılır; kodu TARAMA.
 > İş kuralları: `docs/AJAN_IS.md` · Analiz: `docs/AJAN_ANALIZ.md` · Faz görevleri ve test senaryoları: `docs/FAZLAR.md` (yalnız ilgili `## F<n>` başlığı okunur).
@@ -45,7 +45,7 @@ lib/
 ```
 - UI yalnız `ServerController`'ı okur; servisleri doğrudan çağırmaz.
 - Sunucu → UI olayları: `Stream<ServerEvent>` (FileUploaded, FileDeleted, TextReceived, ServerErrorEvent) — ServerService.events → ServerController.events.
-- İstek hattı: errorMiddleware (500 JSON) → authMiddleware (`?t=`/cookie; `/login` muaf; tokensız `GET /` → 302 /login) → shelf_router.
+- İstek hattı: securityHeaders (her yanıta CSP + nosniff) → errorMiddleware (500 JSON) → authMiddleware (`?t=`/cookie; `/login` muaf; tokensız `GET /` → 302 /login) → shelf_router.
 - Upload: `_BodyGuard` gövdeyi izler; bağlantı koparsa aktif parça hatayla kapanır (mime 2.1.0 bunu yapmıyor, yoksa `.part` asılı kalır).
 - Geçici dosya: `.<ad>.part` (safeName noktayla başlamaz → gerçek adla çakışmaz). Eşzamanlı aynı ad: `StorageService.reserveUnique`.
 - Tüm dosya sistemi yolları `StorageService.resolve(name)` üzerinden; kök dışına çıkan yol = istisna.
@@ -56,7 +56,8 @@ lib/
 |---|---|---|
 | lib/main.dart | 15 | runApp + ChangeNotifierProvider<ServerController(network: NetworkService())> |
 | lib/app.dart | 29 | LocalDropApp: MaterialApp, M3, seed teal, light/dark |
-| lib/core/constants.dart | 55 | AppConstants (§5) |
+| lib/core/constants.dart | 61 | AppConstants (§5) |
+| lib/core/format.dart | 14 | formatSize (saf; web UI JS ile aynı kural) |
 | lib/core/errors.dart | 17 | ServerStartException, PathEscapeException |
 | lib/core/safe_name.dart | 46 | safeName, splitExtension, uniqueName (saf) |
 | lib/core/secrets.dart | 32 | generateToken, generatePin, constantTimeEquals |
@@ -65,7 +66,9 @@ lib/
 | lib/server/responses.dart | 15 | jsonOk/jsonError, html/json başlıkları |
 | lib/server/server_event.dart | 25 | sealed ServerEvent |
 | lib/server/auth_middleware.dart | 51 | authMiddleware, tokenCookie, readCookie |
-| lib/server/router.dart | 69 | errorMiddleware, buildHandler (route tablosu) |
+| lib/server/router.dart | 84 | contentSecurityPolicy, securityHeaders, errorMiddleware, buildHandler (route tablosu) |
+| lib/server/web_ui.dart | 378 | const webUiHtml: sürükle-bırak, XHR progress/hız/ETA, liste (indir/sil satır içi onay), metin gönder, 401/ağ banner'ı, dark mode, 5 sn liste yenileme; innerHTML 0 |
+| lib/server/handlers/text_handler.dart | 62 | POST /api/text: JSON {text}, ≤64 KB (header + akış), TextReceived |
 | lib/server/handlers/login_handler.dart | 60 | GET/POST /login (PIN → cookie) |
 | lib/server/handlers/files_handler.dart | 74 | list, download (stream, filename*), delete |
 | lib/server/handlers/upload_handler.dart | 170 | multipart → .part → rename; limit 413; _BodyGuard |
@@ -81,6 +84,9 @@ lib/
 | test/unit/safe_name_test.dart | 55 | safeName (9) |
 | test/unit/unique_name_test.dart | 24 | uniqueName (5) |
 | test/unit/secrets_test.dart | 22 | token/PIN/constantTimeEquals |
+| test/unit/format_size_test.dart | 14 | formatSize |
+| test/server/web_ui_test.dart | 57 | GET / başlıklar, harici kaynak yok, innerHTML 0, gömülü sabitler |
+| test/server/text_handler_test.dart | 78 | 200/413 (header+akış)/400/401 |
 | test/unit/server_controller_test.dart | 85 | start/stop/hata/ağ yok (loopback) |
 | test/server/handler_test_utils.dart | 76 | HandlerFixture, multipart gövde |
 | test/server/auth_test.dart | 87 | 401/cookie/login (9) |
@@ -116,6 +122,8 @@ lib/
 | Dosya adı | ≤200 karakter (rune), boşsa `dosya` |
 | Token taşıma | `?t=` / cookie `ld_token` (HttpOnly, SameSite=Strict, Path=/) |
 | /login gövde | ≤1024 B |
+| Metin (`/api/text`) | ≤64 KB (UTF-8, JSON gövdesi) |
+| Web liste yenileme | 5000 ms (sekme görünürken) |
 | Log öneki | `[LD/<alan>]` (debugPrint, yalnız kDebugMode) |
 
 ## 6. Özellik durumu
@@ -125,7 +133,7 @@ lib/
 | İskelet + Provider (F1) | ✅ | ✅ | ⏳ |
 | IP tespiti (F2) | ✅ | ✅ | ⏳ |
 | HTTP sunucu + token (F3) | ✅ | ✅ | ⏳ |
-| Web arayüzü (F4) | ⏳ | ⏳ | ⏳ |
+| Web arayüzü (F4) | ✅ | ✅ | ⏳ |
 | Mobil arayüz (F5) | ⏳ | ⏳ | ⏳ |
 | Arka plan + depolama (F6) | ⏳ | ⏳ | ⏳ |
 | Sertleştirme (F7) | ⏳ | ⏳ | ⏳ |
@@ -140,6 +148,7 @@ lib/
 - K6: IP kaynağı = `NetworkInterface.list` (arayüz adıyla); `getWifiIP()` yalnız `preferred` ipucu. Neden: getWifiIP konum izni istemiyor ama Android 12+'da aktif ağı (Wi-Fi kapalıyken mobil veri) döndürüyor; arayüz adı olmadan mobil veri elenemez. Konum izni istenmez.
 - K7: indirme/silmede ad `safeName(ad) == ad` değilse 400 (düzeltilmez); upload'da ad temizlenir. Bozuk %-kodlu URL'yi shelf zaten Request oluştururken reddeder.
 - K8: T3 içerik doğrulaması sha256 yerine deterministik üreteçle bayt bayt karşılaştırma (crypto paketi eklememek için; daha sıkı).
+- K9: Web UI hiç innerHTML kullanmaz (test sayısı 0). Token cookie'ye alınınca `history.replaceState` ile `?t=` adres çubuğundan silinir. CSP/nosniff tüm yanıtlara eklenir.
 - K5 (F6'da kesinleşecek): FGS türü adayı `dataSync` (Android 15 süre limiti → onTimeout'ta sunucu kapanır + bildirim).
 
 ## 8. AÇIK BULGULAR (S-n: şüphe, B-n: doğrulanmış)
@@ -165,6 +174,12 @@ lib/
    (Get-FileHash C:\temp\test.zip).Hash -eq (Get-FileHash C:\temp\geri.zip).Hash          # True
    ```
 8. F3: Tarayıcıda `http://<IP>:<PORT>/login` → PIN → `/` açılıyor.
+9. F4 T4: Chrome'da ekrandaki adres → arayüz açılıyor; DevTools Ağ sekmesinde dış istek yok, adres çubuğunda `?t=` kalmıyor.
+10. F4 T4: 3 dosya sürükle → 3 progress (yüzde, MB/s, kalan), hepsi tamamlanıyor, liste yenileniyor.
+11. F4 T4: Adı `<img src=x onerror=alert(1)>.txt` olan dosya yükle → listede metin (`_img src=x ..._`), alert yok.
+12. F4 T4: Gizli pencerede token'sız `http://<IP>:<PORT>/api/files` → 401; arayüz açıkken sunucuyu durdur/başlat → "Bağlantı süresi doldu, QR'ı tekrar okutun".
+13. F4: Metin gönder → log `[LD/Text] received chars=N` (telefonda banner F5'te).
+14. F4: Telefon dar ekran (360 px) ve koyu tema → arayüz kullanılabilir.
 
 ## 10. COMMIT GÜNLÜĞÜ (eski → yeni)
 
@@ -174,7 +189,8 @@ lib/
 | e3e5df7, 6582d22 | — | GitHub main birleştirme (README 1 satır) |
 | 1375142 | F1 | feat(app): iskelet, Provider, sabitler, log (origin/dev'e push edildi) |
 | d3d42d4 | F2 | feat(net): IP tespiti + ağ durumu akışı (dev + main push) |
-| (bu commit) | F3 | feat(server): shelf sunucu, token/PIN, upload/download/delete |
+| 5af0001 | F3 | feat(server): shelf sunucu, token/PIN, upload/download/delete (dev + main push) |
+| (bu commit) | F4 | feat(web): web arayüzü + POST /api/text + CSP |
 
 ## 11. Ortam / cihaz notları
 
@@ -191,4 +207,5 @@ lib/
 <!-- 2026-10-09 20:33 | b52ff2e | F0 repo kurulumu | kod: .gitignore (+imza/ajan satırları), CLAUDE.md (ignore) | test: yok | analyze/test: — | dev branch, ilk commit; platform klasörleri + pubspec.lock + .metadata da (değiştirilmeden) eklendi, temiz ağaç için -->
 <!-- 2026-10-09 20:38 | 1375142 | F1 iskelet | kod: main.dart, app.dart, core/constants.dart, core/log.dart, state/server_controller.dart, ui/screens/home_screen.dart, README; widget_test.dart silindi | test: home_screen_test(+1), log_test(+2) | analyze/test: OK | demo kaldırıldı, Provider iskeleti kuruldu -->
 <!-- 2026-10-09 20:43 | d3d42d4 | F2 ağ servisi | kod: core/lan_ip.dart, services/network_service.dart, state/server_controller.dart, ui/screens/home_screen.dart, core/constants.dart, main.dart | test: pick_lan_ip_test(+9), network_service_test(+2), home_screen_test(+2) | analyze/test: OK (16) | K6 kararı; manifest değişmedi -->
-<!-- 2026-10-09 20:56 | (bu commit) | F3 HTTP sunucu | kod: core/{errors,safe_name,secrets,constants}, server/*, services/{server,storage}_service, state/server_controller, ui/home_screen | test: safe_name(+9) unique_name(+5) secrets(+3) server_controller(+3) auth(+9) files_handler(+12) roundtrip(+7) | analyze/test: OK (64) | mime kopma hatası _BodyGuard ile çözüldü; K7, K8 -->
+<!-- 2026-10-09 20:56 | 5af0001 | F3 HTTP sunucu | kod: core/{errors,safe_name,secrets,constants}, server/*, services/{server,storage}_service, state/server_controller, ui/home_screen | test: safe_name(+9) unique_name(+5) secrets(+3) server_controller(+3) auth(+9) files_handler(+12) roundtrip(+7) | analyze/test: OK (64) | mime kopma hatası _BodyGuard ile çözüldü; K7, K8 -->
+<!-- 2026-10-09 21:02 | (bu commit) | F4 web arayüzü | kod: server/web_ui.dart, server/handlers/text_handler.dart, server/router.dart, core/format.dart, core/constants.dart | test: format_size(+1) web_ui(+5) text_handler(+8) | analyze/test: OK (78); JS node --check OK, formatSize JS=Dart | K9 -->
