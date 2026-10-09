@@ -33,6 +33,12 @@ class NativeDeviceChannel implements LockAdapter, MediaStoreAdapter {
   Future<bool> isSupported() async =>
       await _channel.invokeMethod<bool>('downloadsSupported') ?? false;
 
+  /// `Download/LocalDrop` yolu (Android 11+), aksi halde null.
+  Future<String?> downloadsDir() => _channel.invokeMethod<String>(
+    'downloadsDir',
+    {'folder': AppConstants.downloadsSubfolder},
+  );
+
   @override
   Future<void> saveToDownloads(File source, String name) =>
       _channel.invokeMethod<void>('saveToDownloads', {

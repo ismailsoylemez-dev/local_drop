@@ -20,7 +20,7 @@ class SettingsService {
   static const _kOnboarding = 'onboardingDone';
 
   SaveLocation get saveLocation =>
-      _enumOr(SaveLocation.values, _kSaveLocation, SaveLocation.appFolder);
+      _enumOr(SaveLocation.values, _kSaveLocation, SaveLocation.downloads);
 
   Future<void> setSaveLocation(SaveLocation value) =>
       _prefs.setString(_kSaveLocation, value.name);

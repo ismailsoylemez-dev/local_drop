@@ -106,10 +106,10 @@ void main() {
     final c = await running();
     await settle();
     expect(c.downloadsSupported, isTrue);
-    expect(c.saveLocation, SaveLocation.appFolder);
-    await c.setSaveLocation(SaveLocation.downloads);
     expect(c.saveLocation, SaveLocation.downloads);
-    expect(settings.saveLocation, SaveLocation.downloads);
+    await c.setSaveLocation(SaveLocation.appFolder);
+    expect(c.saveLocation, SaveLocation.appFolder);
+    expect(settings.saveLocation, SaveLocation.appFolder);
     c.dispose();
   });
 

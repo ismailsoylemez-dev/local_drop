@@ -54,6 +54,28 @@ void main() {
     expect(res.headers['location'], '/login');
   });
 
+  test('eski cookie ile / → /login + cookie silinir, hatalı sayılmaz', () async {
+    for (var i = 0; i < 12; i++) {
+      final res = await f.send(
+        'GET',
+        '/',
+        auth: false,
+        headers: {'cookie': 'ld_token=eskiOturum'},
+      );
+      expect(res.statusCode, 302);
+      expect(res.headers['location'], '/login');
+      expect(res.headers['set-cookie'], contains('Max-Age=0'));
+    }
+    final login = await f.send('GET', '/login', auth: false);
+    expect(login.statusCode, 200);
+  });
+
+  test('eski ?t= ile / → /login', () async {
+    final res = await f.send('GET', '/?t=eskiToken', auth: false);
+    expect(res.statusCode, 302);
+    expect(res.headers['location'], '/login');
+  });
+
   test('GET /login token istemez', () async {
     final res = await f.send('GET', '/login', auth: false);
     expect(res.statusCode, 200);

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,10 +22,19 @@ Future<void> main() async {
   final settings = await SettingsService.load();
 
   const device = NativeDeviceChannel();
+  var downloadsOk = false;
+  try {
+    downloadsOk = await device.isSupported();
+    final dir = await device.downloadsDir();
+    if (dir != null) storage.exportDir = Directory(dir);
+  } catch (_) {
+    // Kanal yoksa (ör. eski Android) dosyalar uygulama klasöründe kalır.
+  }
   final transfers = WakelockPolicy(device);
   final target = StorageTarget(
     adapter: device,
-    location: () => settings.saveLocation,
+    location: () =>
+        downloadsOk ? settings.saveLocation : SaveLocation.appFolder,
   );
 
   runApp(

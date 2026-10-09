@@ -328,7 +328,7 @@ class ServerController extends ChangeNotifier {
     }
   }
 
-  File fileFor(String name) => storage.resolve(name, strict: true);
+  File fileFor(String name) => storage.resolveExisting(name);
 
   /// Telefondaki dosyayı siler; dosya yoksa false.
   Future<bool> deleteFile(String name) async {

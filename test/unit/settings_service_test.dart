@@ -12,7 +12,7 @@ void main() {
 
   test('varsayılanlar', () async {
     final s = await load();
-    expect(s.saveLocation, SaveLocation.appFolder);
+    expect(s.saveLocation, SaveLocation.downloads);
     expect(s.port, 8080);
     expect(s.autoStopMinutes, 15);
     expect(s.themeMode, ThemeMode.system);
@@ -21,14 +21,14 @@ void main() {
 
   test('kaydet → yeni örnek aynı değerleri okur', () async {
     final s = await load();
-    await s.setSaveLocation(SaveLocation.downloads);
+    await s.setSaveLocation(SaveLocation.appFolder);
     await s.setPort(9000);
     await s.setAutoStopMinutes(30);
     await s.setThemeMode(ThemeMode.dark);
     await s.setOnboardingDone();
 
     final again = await SettingsService.load();
-    expect(again.saveLocation, SaveLocation.downloads);
+    expect(again.saveLocation, SaveLocation.appFolder);
     expect(again.port, 9000);
     expect(again.autoStopMinutes, 30);
     expect(again.themeMode, ThemeMode.dark);
@@ -42,7 +42,7 @@ void main() {
       'autoStopMinutes': 7,
       'themeMode': 'mor',
     });
-    expect(s.saveLocation, SaveLocation.appFolder);
+    expect(s.saveLocation, SaveLocation.downloads);
     expect(s.port, 8080);
     expect(s.autoStopMinutes, 15);
     expect(s.themeMode, ThemeMode.system);

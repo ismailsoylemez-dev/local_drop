@@ -25,6 +25,10 @@ String? readCookie(Request request, String name) {
   return null;
 }
 
+/// Eski/geçersiz token cookie'sini siler (sunucu yeniden başlayınca token değişir).
+String expiredTokenCookie() =>
+    '${AppConstants.tokenCookieName}=; Path=/; Max-Age=0; HttpOnly; SameSite=Strict';
+
 /// Hatalı deneme sınırı aşıldı → 429 + Retry-After.
 Response tooManyAttempts(Duration wait) {
   final seconds = retryAfterSeconds(wait);
@@ -67,12 +71,17 @@ Middleware authMiddleware({
       return inner(request);
     }
 
-    // Kimliksiz ana sayfa → giriş (hatalı deneme sayılmaz).
-    if (path.isEmpty &&
-        request.method == 'GET' &&
-        query == null &&
-        cookie == null) {
-      return Response.found('/login');
+    // Ana sayfa (tarayıcı gezinmesi) geçersiz/eski kimlikle → giriş sayfası;
+    // eski cookie silinir. Sunucu yeniden başlayınca token değiştiğinden
+    // tarayıcıda kalan cookie'nin 401 ile kilitlemesi engellenir. Hatalı
+    // deneme sayılmaz (token 16 karakter, tahmin edilemez).
+    if (path.isEmpty && request.method == 'GET') {
+      return Response.found(
+        '/login',
+        headers: {
+          if (cookie != null) HttpHeaders.setCookieHeader: expiredTokenCookie(),
+        },
+      );
     }
     limiter.recordFailure(ip);
     return jsonError(HttpStatus.unauthorized, 'Yetkisiz');

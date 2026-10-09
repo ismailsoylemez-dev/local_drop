@@ -63,7 +63,8 @@ class SettingsScreen extends StatelessWidget {
                   value: SaveLocation.appFolder,
                   title: Text('Uygulama klasörü'),
                   subtitle: Text(
-                    'Dosyalar uygulamada ve bilgisayardaki listede görünür.',
+                    'Dosyalar yalnız uygulamanın kendi klasöründe kalır; '
+                    'Dosyalar uygulamasında görünmez.',
                   ),
                 ),
                 RadioListTile<SaveLocation>(
@@ -72,9 +73,10 @@ class SettingsScreen extends StatelessWidget {
                   title: const Text('İndirilenler'),
                   subtitle: Text(
                     c.downloadsSupported
-                        ? 'Download/${AppConstants.downloadsSubfolder} '
-                              'klasörüne taşınır; Dosyalar uygulamasında '
-                              'görünür, uygulama listesinde görünmez.'
+                        ? 'Varsayılan. Download/'
+                              '${AppConstants.downloadsSubfolder} klasörüne '
+                              'kaydedilir; Dosyalar uygulamasında ve '
+                              'uygulama listesinde görünür.'
                         : 'Android 10 veya üstü gerekir.',
                   ),
                 ),

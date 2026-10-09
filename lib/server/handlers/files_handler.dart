@@ -71,7 +71,7 @@ class FilesHandler {
   (String, File)? _resolve(String rawName) {
     try {
       final name = Uri.decodeComponent(rawName);
-      return (name, storage.resolve(name, strict: true));
+      return (name, storage.resolveExisting(name));
     } on ArgumentError {
       return null;
     } on PathEscapeException {

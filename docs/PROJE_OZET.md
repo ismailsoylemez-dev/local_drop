@@ -1,5 +1,5 @@
 # PROJE ÖZETİ — Local Drop (local_drop)
-<!-- OZET_META: guncelleme=2026-10-09 23:10 | son_kod_commit=0961095 | faz=F8 tamam (tüm fazlar kodda bitti; cihaz doğrulamaları §9) -->
+<!-- OZET_META: guncelleme=2026-10-09 23:45 | son_kod_commit=(bu commit) | faz=F8 tamam (tüm fazlar kodda bitti; cihaz doğrulamaları §9) -->
 
 > **TEK GİRİŞ NOKTASI.** Durum, analiz ve iş başlangıcı buradan yapılır; kodu TARAMA.
 > İş kuralları: `docs/AJAN_IS.md` · Analiz: `docs/AJAN_ANALIZ.md` · Faz görevleri ve test senaryoları: `docs/FAZLAR.md` (yalnız ilgili `## F<n>` başlığı okunur).
@@ -54,7 +54,7 @@ lib/
 - İstek hattı: securityHeaders (her yanıta CSP + nosniff) → errorMiddleware (500 JSON) → authMiddleware (`?t=`/cookie; `/login` muaf; tokensız `GET /` → 302 /login) → shelf_router.
 - Upload: `_BodyGuard` gövdeyi izler; bağlantı koparsa aktif parça hatayla kapanır (mime 2.1.0 bunu yapmıyor, yoksa `.part` asılı kalır).
 - Geçici dosya: `.<ad>.part` (safeName noktayla başlamaz → gerçek adla çakışmaz). Eşzamanlı aynı ad: `StorageService.reserveUnique`.
-- Tüm dosya sistemi yolları `StorageService.resolve(name)` üzerinden; kök dışına çıkan yol = istisna.
+- Tüm dosya sistemi yolları `StorageService.resolve(name)` (yazma) / `resolveExisting(name)` (okuma/silme: kök, yoksa exportDir) üzerinden; kök dışına çıkan yol = istisna.
 
 ## 3. Dosya haritası
 
@@ -137,7 +137,8 @@ lib/
 - K10: Telefon→PC: `readAsByteStream` ile klasöre akışla kopya; yol referansı yok (SAF URI kalıcı değil).
 - K11: open_filex'in READ_EXTERNAL_STORAGE + READ_MEDIA_* izinleri `tools:node="remove"` (onaylı).
 - K12: wakelock_plus yok (yalnız ekran). CPU+Wi-Fi kilidi native, yalnız transfer sürerken. Boot alıcısı + izni kaldırıldı (onaylı).
-- K13: İndirilenler (10+): biten dosya MediaStore'a taşınır, listelerde görünmez. Ayar JSON dosyada (SharedPreferences F8).
+- K13: Kayıt yeri varsayılanı İndirilenler (10+): biten dosya MediaStore ile `Download/LocalDrop`'a taşınır. Android 11+'da `StorageService.exportDir` (Kotlin `downloadsDir`) ham yolla okunur → dosya uygulama + PC listesinde kalır, indir/aç/sil `resolveExisting` ile. Android 10'da listede görünmez.
+- K16: `GET /` geçersiz/eski token veya cookie ile → 302 `/login` + cookie silinir (Max-Age=0), hatalı deneme sayılmaz (sunucu yeniden başlayınca Chrome'daki eski cookie 401'de kilitliyordu). Web UI 401 → "Giriş yap" butonu.
 - K15: İkon PIL ile (`assets/icon/`), adaptive + Android 12 splash. Ayarlar SharedPreferences'ta (JSON göçü yok). Yeni applicationId → eski kurulum kaldırılmalı. Onaylı.
 - K14: Engelli IP doğru token ile de 429. Kimliksiz `GET /` sayılmaz. NUL'lu multipart adı → 400. Kapsam: `flutter test --coverage` + lcov; background_service/file_actions yalnız cihazda.
 
@@ -167,7 +168,8 @@ lib/
 6. F5: PC'den yükle → SnackBar + satır (`Upload done`); dokun aç, uzun bas Paylaş/Sil; "Bilgisayara gönder" PDF → PC'de; metin banner Kopyala/Kapat; ≥600 dp yan yana.
 7. F6: Kalıcı bildirim + "Durdur" (`Fgs stop by notification`); kilitli ekranda 2 GB, hash eşit (`Lock acquireLocks`→`releaseLocks`); kaydırınca sunucu yaşıyor (MIUI ayarları); İndirilenler → Download/LocalDrop; bildirim izni reddi → uyarı.
 8. F7: Transferde Wi-Fi değiştir → hata + yeni QR "Ağ değişti…" (`Net ip değişti`); disk dolu → 507 "Telefonda yer yok"; 11 yanlış token → 429; transferde Durdur → onay.
-9. F8: Eski `com.example.local_drop`'u kaldır, temiz kur → ikon/splash, onboarding → uçtan uca; 15 dk boşta → oto-durdurma + SnackBar; release'te `[LD/` logu yok; port/tema ayarı uygulanıyor.
+9. Düzeltme (K13/K16): PC'den yükle → Dosyalar > Download/LocalDrop'ta görünüyor VE uygulama listesinde kalıyor; uygulamadan aç/sil çalışıyor. Sunucuyu durdur-başlat → Chrome'da eski adres → /login (PIN) veya yeni QR ile giriş, "Yetkisiz" yok.
+10. F8: Eski `com.example.local_drop`'u kaldır, temiz kur → ikon/splash, onboarding → uçtan uca; 15 dk boşta → oto-durdurma + SnackBar; release'te `[LD/` logu yok; port/tema ayarı uygulanıyor.
 
 ## 10. COMMIT GÜNLÜĞÜ (eski → yeni)
 
@@ -190,3 +192,4 @@ lib/
 <!-- 2026-10-09 20:33–22:11 | b52ff2e…9f05638 | kurulum, F0–F7 | ayrıntı: §3, §7, §10 | analyze/test: OK (170), kapsam 85,1% -->
 <!-- 2026-10-09 22:50 | 0961095 | F8 yayın hazırlığı | kod: gradle (applicationId, imza), manifest label, ikon/splash, settings→SharedPreferences, auto_stop_policy, onboarding/settings ekranları, themeMode, play_store.md | test: +12 (182) | analyze/test/appbundle: OK | K15 -->
 <!-- 2026-10-09 23:10 | (bu commit) | analiz (eksik/çalışmayan) | kod: — | test: — | analyze: 0, test: 182 OK | S-1..S-4; F8 hash düzeltildi -->
+<!-- 2026-10-09 23:45 | (bu commit) | fix: İndirilenler varsayılan + listede görünür; eski cookie → /login | kod: storage_service (exportDir, resolveExisting, list), files_handler, server_controller.fileFor, main, device_channel(.kt), settings default, auth_middleware, web_ui | test: storage_export(+5), auth(+2), settings/controller güncellendi (189) | analyze/test/apk: OK | K13, K16 -->

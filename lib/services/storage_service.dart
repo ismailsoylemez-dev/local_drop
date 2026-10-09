@@ -10,10 +10,13 @@ import '../core/safe_name.dart';
 typedef StoredFile = ({String name, int size, DateTime modified});
 
 /// Alınan dosyaların kök klasörü. Tüm yollar [resolve] üzerinden kurulur.
+/// [exportDir] (Android 11+: `Download/LocalDrop`) İndirilenler'e taşınan
+/// dosyaları listede tutmak için okunur; yazma yalnız MediaStore ile yapılır.
 class StorageService {
-  StorageService(this.root);
+  StorageService(this.root, {this.exportDir});
 
   final Directory root;
+  Directory? exportDir;
 
   /// Yüklemesi süren (henüz rename edilmemiş) adlar; eşzamanlı aynı ad için.
   final Set<String> _reserved = {};
@@ -41,6 +44,26 @@ class StorageService {
     return file;
   }
 
+  /// Var olan dosya: önce kök, yoksa [exportDir]. Yazma için [resolve].
+  File resolveExisting(String name) {
+    final file = resolve(name, strict: true);
+    final export = _exportFile(file.uri.pathSegments.last);
+    if (export != null && !file.existsSync() && export.existsSync()) {
+      return export;
+    }
+    return file;
+  }
+
+  File? _exportFile(String safe) {
+    final dir = exportDir;
+    if (dir == null) return null;
+    final file = File('${dir.path}${Platform.pathSeparator}$safe');
+    if (file.absolute.parent.path != dir.absolute.path) {
+      throw PathEscapeException(safe);
+    }
+    return file;
+  }
+
   /// Yükleme sırasında kullanılan geçici dosya: `.<ad>.part` (güvenli adlar
   /// noktayla başlamadığından gerçek dosyalarla çakışmaz).
   File partFileFor(String safe) => File(
@@ -51,7 +74,10 @@ class StorageService {
   String reserveUnique(String name) {
     final unique = uniqueName(
       safeName(name),
-      (n) => _reserved.contains(n) || resolve(n).existsSync(),
+      (n) =>
+          _reserved.contains(n) ||
+          resolve(n).existsSync() ||
+          (_exportFile(n)?.existsSync() ?? false),
     );
     _reserved.add(unique);
     return unique;
@@ -62,19 +88,26 @@ class StorageService {
   bool _isPart(String name) =>
       name.startsWith('.') && name.endsWith(AppConstants.partExtension);
 
-  /// Kökteki tamamlanmış dosyalar, ada göre sıralı.
+  /// Kök + [exportDir]'deki tamamlanmış dosyalar, ada göre sıralı. Aynı ad
+  /// ikisinde de varsa kökteki gösterilir ([resolveExisting] ile aynı).
   Future<List<StoredFile>> list() async {
-    if (!await root.exists()) return [];
-    final result = <StoredFile>[];
-    await for (final entity in root.list(followLinks: false)) {
-      if (entity is! File) continue;
-      final name = entity.uri.pathSegments.last;
-      if (_isPart(name)) continue;
-      final stat = await entity.stat();
-      result.add((name: name, size: stat.size, modified: stat.modified));
+    final byName = <String, StoredFile>{};
+    for (final dir in [?exportDir, root]) {
+      try {
+        if (!await dir.exists()) continue;
+        await for (final entity in dir.list(followLinks: false)) {
+          if (entity is! File) continue;
+          final name = entity.uri.pathSegments.last;
+          if (_isPart(name) || safeName(name) != name) continue;
+          final stat = await entity.stat();
+          byName[name] = (name: name, size: stat.size, modified: stat.modified);
+        }
+      } on FileSystemException catch (e) {
+        // İndirilenler okunamazsa (izin/sürüm) uygulama klasörü yine listelenir.
+        Log.d('Storage', 'liste okunamadı dir=${dir.path}: $e');
+      }
     }
-    result.sort((a, b) => a.name.compareTo(b.name));
-    return result;
+    return byName.values.toList()..sort((a, b) => a.name.compareTo(b.name));
   }
 
   /// Akışı `.part`'a yazar, bitince benzersiz adla rename eder. Hata, iptal
@@ -132,9 +165,9 @@ class StorageService {
     }
   }
 
-  /// Güvenli adla kökteki dosyayı siler; yoksa false.
+  /// Güvenli adla kökteki (yoksa İndirilenler'deki) dosyayı siler; yoksa false.
   Future<bool> delete(String name) async {
-    final file = resolve(name, strict: true);
+    final file = resolveExisting(name);
     if (!await file.exists()) return false;
     await file.delete();
     return true;

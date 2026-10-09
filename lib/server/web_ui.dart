@@ -126,7 +126,7 @@ const MAX_TEXT = '''
 const REFRESH_MS = '''
     '${AppConstants.webListRefreshMs}'
     r''';
-const MSG_AUTH = 'Bağlantı süresi doldu, QR\'ı tekrar okutun.';
+const MSG_AUTH = 'Oturum geçersiz (sunucu yeniden başlatılmış olabilir). Yeni QR\'ı okutun ya da PIN ile giriş yapın.';
 const MSG_NET = 'Telefona ulaşılamadı.';
 
 const $ = (id) => document.getElementById(id);
@@ -156,9 +156,10 @@ function formatEta(sec) {
 }
 
 let authLost = false;
-function showBanner(text, retry) {
+function showBanner(text, retry, label) {
   $('bannerText').textContent = text;
   const btn = $('bannerRetry');
+  btn.textContent = label || 'Tekrar dene';
   btn.classList.toggle('hidden', !retry);
   btn.onclick = retry ? () => { hideBanner(); retry(); } : null;
   $('banner').classList.remove('hidden');
@@ -166,7 +167,8 @@ function showBanner(text, retry) {
 function hideBanner() { $('banner').classList.add('hidden'); }
 function onAuthLost() {
   authLost = true;
-  showBanner(MSG_AUTH, null);
+  // Eski cookie'li sayfa yenilenince sunucu /login'e yönlendirir.
+  showBanner(MSG_AUTH, () => { location.href = '/login'; }, 'Giriş yap');
 }
 
 async function errorText(res, fallback) {

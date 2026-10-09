@@ -21,6 +21,8 @@ import kotlin.concurrent.thread
  * Dart `DeviceChannel` karşılığı:
  * - acquireLocks/releaseLocks: transfer sürerken CPU (PARTIAL) + Wi-Fi kilidi.
  * - downloadsSupported/saveToDownloads: MediaStore ile Download/<klasör>.
+ * - downloadsDir: Download/<klasör> yolu (Android 11+; uygulamanın kendi
+ *   kaydettiği dosyalar izinsiz okunur/silinir), altında null.
  */
 class DeviceChannel(private val context: Context) : MethodChannel.MethodCallHandler {
     companion object {
@@ -42,6 +44,16 @@ class DeviceChannel(private val context: Context) : MethodChannel.MethodCallHand
             "releaseLocks" -> {
                 releaseLocks()
                 result.success(null)
+            }
+            "downloadsDir" -> {
+                val folder = call.argument<String>("folder")
+                if (folder == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                    result.success(null)
+                } else {
+                    @Suppress("DEPRECATION")
+                    val base = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                    result.success(File(base, folder).absolutePath)
+                }
             }
             "downloadsSupported" ->
                 result.success(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
