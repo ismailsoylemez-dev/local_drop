@@ -1,5 +1,5 @@
 # PROJE ÖZETİ — Local Drop (local_drop)
-<!-- OZET_META: guncelleme=2026-10-09 20:38 | son_kod_commit=(F1 commit'i, hash §12'de düzeltilecek) | faz=F1 tamam, F2 bekliyor -->
+<!-- OZET_META: guncelleme=2026-10-09 20:43 | son_kod_commit=(F2 commit'i, hash §12'de düzeltilecek) | faz=F2 tamam, F3 bekliyor -->
 
 > **TEK GİRİŞ NOKTASI.** Durum, analiz ve iş başlangıcı buradan yapılır; kodu TARAMA.
 > İş kuralları: `docs/AJAN_IS.md` · Analiz: `docs/AJAN_ANALIZ.md` · Faz görevleri ve test senaryoları: `docs/FAZLAR.md` (yalnız ilgili `## F<n>` başlığı okunur).
@@ -51,13 +51,17 @@ lib/
 
 | Dosya | Satır | Görev |
 |---|---|---|
-| lib/main.dart | 14 | runApp + ChangeNotifierProvider<ServerController> |
+| lib/main.dart | 15 | runApp + ChangeNotifierProvider<ServerController(network: NetworkService())> |
 | lib/app.dart | 29 | LocalDropApp: MaterialApp, M3, seed teal, light/dark |
-| lib/core/constants.dart | 38 | AppConstants (§5) |
+| lib/core/constants.dart | 41 | AppConstants (§5) |
+| lib/core/lan_ip.dart | 42 | IfaceAddress record; saf `pickLanIp(list, preferred:)` |
 | lib/core/log.dart | 20 | Log.d (kDebugMode), Log.mask |
-| lib/state/server_controller.dart | 33 | ServerStatus enum; status/url/pin/errorMessage; start/stop stub |
-| lib/ui/screens/home_screen.dart | 32 | "Sunucu kapalı" + Başlat |
-| test/ui/home_screen_test.dart | 22 | widget: başlık, metin, buton |
+| lib/services/network_service.dart | 91 | sealed NetworkResult (Connected/NoNetwork); NetworkService.current()/watch() (distinct, enjekte edilebilir kaynaklar) |
+| lib/state/server_controller.dart | 56 | ServerStatus; status/url/pin/errorMessage; network + canStart (watch dinler); start/stop stub |
+| lib/ui/screens/home_screen.dart | 40 | "Sunucu kapalı" + ağ metni (IP / Ağ bağlantısı yok) + Başlat (ağ yoksa pasif) |
+| test/ui/home_screen_test.dart | 64 | widget (FakeNetworkService): başlık, NoNetwork→pasif, Connected→IP |
+| test/unit/pick_lan_ip_test.dart | 64 | IP seçimi (9) |
+| test/unit/network_service_test.dart | 35 | watch distinct, getWifiIP hata fallback |
 | test/unit/log_test.dart | 12 | mask |
 
 ## 4. Değişmez kurallar
@@ -83,6 +87,7 @@ lib/
 | Tek dosya limiti | 4 GB |
 | Yanlış token limiti | IP başına 10 / dk → 429 |
 | Ağ yoklama | 3 sn |
+| Mobil arayüz işaretleri | `rmnet`, `ccmni` (ad içinde geçerse elenir) |
 | Kısmi dosya uzantısı | `.part` |
 | Log öneki | `[LD/<alan>]` (debugPrint, yalnız kDebugMode) |
 
@@ -91,7 +96,7 @@ lib/
 | Özellik | Kod | Test | Cihazda |
 |---|---|---|---|
 | İskelet + Provider (F1) | ✅ | ✅ | ⏳ |
-| IP tespiti (F2) | ⏳ | ⏳ | ⏳ |
+| IP tespiti (F2) | ✅ | ✅ | ⏳ |
 | HTTP sunucu + token (F3) | ⏳ | ⏳ | ⏳ |
 | Web arayüzü (F4) | ⏳ | ⏳ | ⏳ |
 | Mobil arayüz (F5) | ⏳ | ⏳ | ⏳ |
@@ -105,6 +110,7 @@ lib/
 - K2: Provider (ChangeNotifier); Riverpod/GetX yok.
 - K3: Token zorunlu; QR'a gömülü. PIN yalnız QR okutulamayan durum için.
 - K4: Alınan dosyalar F3–F5'te uygulama klasöründe; F6'da Download/LocalDrop (MediaStore). MANAGE_EXTERNAL_STORAGE kullanılmaz.
+- K6: IP kaynağı = `NetworkInterface.list` (arayüz adıyla); `getWifiIP()` yalnız `preferred` ipucu. Neden: getWifiIP konum izni istemiyor ama Android 12+'da aktif ağı (Wi-Fi kapalıyken mobil veri) döndürüyor; arayüz adı olmadan mobil veri elenemez. Konum izni istenmez.
 - K5 (F6'da kesinleşecek): FGS türü adayı `dataSync` (Android 15 süre limiti → onTimeout'ta sunucu kapanır + bildirim).
 
 ## 8. AÇIK BULGULAR (S-n: şüphe, B-n: doğrulanmış)
@@ -116,6 +122,9 @@ lib/
 (Her faz kendi maddelerini FAZLAR.md "Cihaz" bölümünden buraya ekler; doğrulanınca silinir.)
 
 1. F1: Uygulama açılıyor, Local Drop başlığı ve Başlat butonu görünüyor.
+2. F2: Wi-Fi açık → ekranda `IP: 192.168.x.x`; log `[LD/Net] ip=192.168...`.
+3. F2: Wi-Fi kapat → ≤3 sn içinde "Ağ bağlantısı yok", Başlat pasif; log `[LD/Net] no-network`.
+4. F2: Hotspot aç (Wi-Fi kapalı) → 192.168.43.1 benzeri adres (MIUI'de farklı alt ağ olabilir).
 
 ## 10. COMMIT GÜNLÜĞÜ (eski → yeni)
 
@@ -123,7 +132,8 @@ lib/
 |---|---|---|
 | b52ff2e | F0 | chore: ilk commit + ajan dokumanlari (repo, dev branch, .gitignore) |
 | e3e5df7, 6582d22 | — | GitHub main birleştirme (README 1 satır) |
-| (bu commit) | F1 | feat(app): iskelet, Provider, sabitler, log |
+| 1375142 | F1 | feat(app): iskelet, Provider, sabitler, log (origin/dev'e push edildi) |
+| (bu commit) | F2 | feat(net): IP tespiti + ağ durumu akışı |
 
 ## 11. Ortam / cihaz notları
 
@@ -138,4 +148,5 @@ lib/
 <!-- format: YYYY-MM-DD HH:mm | hash/commitlenmedi | iş | kod: dosyalar | test: dosyalar | analyze/test | sonuç -->
 <!-- 2026-10-09 20:40 | commitlenmedi | docs/kurulum | kod: yok | özet + AJAN_IS + AJAN_ANALIZ + FAZLAR oluşturuldu -->
 <!-- 2026-10-09 20:33 | b52ff2e | F0 repo kurulumu | kod: .gitignore (+imza/ajan satırları), CLAUDE.md (ignore) | test: yok | analyze/test: — | dev branch, ilk commit; platform klasörleri + pubspec.lock + .metadata da (değiştirilmeden) eklendi, temiz ağaç için -->
-<!-- 2026-10-09 20:38 | (bu commit) | F1 iskelet | kod: main.dart, app.dart, core/constants.dart, core/log.dart, state/server_controller.dart, ui/screens/home_screen.dart, README; widget_test.dart silindi | test: home_screen_test(+1), log_test(+2) | analyze/test: OK | demo kaldırıldı, Provider iskeleti kuruldu -->
+<!-- 2026-10-09 20:38 | 1375142 | F1 iskelet | kod: main.dart, app.dart, core/constants.dart, core/log.dart, state/server_controller.dart, ui/screens/home_screen.dart, README; widget_test.dart silindi | test: home_screen_test(+1), log_test(+2) | analyze/test: OK | demo kaldırıldı, Provider iskeleti kuruldu -->
+<!-- 2026-10-09 20:43 | (bu commit) | F2 ağ servisi | kod: core/lan_ip.dart, services/network_service.dart, state/server_controller.dart, ui/screens/home_screen.dart, core/constants.dart, main.dart | test: pick_lan_ip_test(+9), network_service_test(+2), home_screen_test(+2) | analyze/test: OK (16) | K6 kararı; manifest değişmedi -->

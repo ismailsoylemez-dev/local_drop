@@ -27,6 +27,9 @@ abstract final class AppConstants {
   /// Ağ (IP) yoklama aralığı.
   static const Duration networkPollInterval = Duration(seconds: 3);
 
+  /// Mobil veri arayüz adlarında geçen parçalar (v4-rmnet_data0 gibi CLAT dahil).
+  static const List<String> mobileIfaceMarkers = ['rmnet', 'ccmni'];
+
   /// Yüklenmekte olan dosyanın geçici uzantısı.
   static const String partExtension = '.part';
 
