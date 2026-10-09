@@ -24,6 +24,10 @@ abstract final class AppConstants {
   static const int wrongTokenLimit = 10;
   static const Duration wrongTokenWindow = Duration(minutes: 1);
 
+  /// "Disk dolu" OS hata kodları: ENOSPC (Linux/Android), Windows
+  /// ERROR_HANDLE_DISK_FULL / ERROR_DISK_FULL (testler Windows'ta da koşar).
+  static const Set<int> diskFullErrorCodes = {28, 39, 112};
+
   /// Ağ (IP) yoklama aralığı.
   static const Duration networkPollInterval = Duration(seconds: 3);
 

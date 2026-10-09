@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:local_drop/core/lan_ip.dart';
 import 'package:local_drop/services/network_service.dart';
@@ -31,5 +33,19 @@ void main() {
       interfaces: () async => [(iface: 'wlan0', ip: '10.0.0.9')],
     );
     expect(await service.current(), const Connected('10.0.0.9'));
+  });
+
+  test('varsayılan arayüz listesi gerçek sistemden okunur', () async {
+    final service = NetworkService(wifiIp: () async => null);
+    final result = await service.current();
+    expect(result, anyOf(isA<Connected>(), isA<NoNetwork>()));
+  });
+
+  test('arayüz listesi hata verirse NoNetwork', () async {
+    final service = NetworkService(
+      wifiIp: () async => '192.168.1.5',
+      interfaces: () async => throw const SocketException('yok'),
+    );
+    expect(await service.current(), const NoNetwork());
   });
 }

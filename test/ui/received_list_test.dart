@@ -82,7 +82,7 @@ void main() {
       c = ServerController(
         network: network,
         storage: storage,
-        createServer: (s) => server = FakeServerService(s),
+        createServer: (s, _) => server = FakeServerService(s),
       );
       network.controller.add(const Connected('192.168.1.20'));
       await Future<void>.delayed(const Duration(milliseconds: 20));

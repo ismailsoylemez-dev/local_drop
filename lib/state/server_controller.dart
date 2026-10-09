@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import '../core/constants.dart';
 import '../core/errors.dart';
 import '../core/log.dart';
+import '../core/wakelock_policy.dart';
 import '../server/server_event.dart';
 import '../services/background_service.dart';
 import '../services/network_service.dart';
@@ -13,13 +14,21 @@ import '../services/server_service.dart';
 import '../services/settings_service.dart';
 import '../services/storage_service.dart';
 import '../services/storage_target.dart';
+import 'network_restart_policy.dart';
 
 enum ServerStatus { stopped, starting, running, error }
 
-typedef ServerFactory = ServerService Function(StorageService storage);
+/// [transfers]: controller'ın transfer gözlemcisi (ağ değişiminde yeniden
+/// başlatmayı aktif transfer bitene kadar ertelemek için) sunucuya geçmeli.
+typedef ServerFactory = ServerService Function(
+  StorageService storage,
+  TransferObserver transfers,
+);
 
-ServerService defaultServerFactory(StorageService storage) =>
-    ServerService(storage: storage);
+ServerService defaultServerFactory(
+  StorageService storage,
+  TransferObserver transfers,
+) => ServerService(storage: storage, transfers: transfers);
 
 /// UI'nin tek durum kaynağı.
 class ServerController extends ChangeNotifier {
@@ -33,6 +42,7 @@ class ServerController extends ChangeNotifier {
   }) {
     _networkSub = network.watch().listen((result) {
       _network = result;
+      _restartPolicy.onNetwork(result);
       _notify();
     });
     _backgroundSub = background?.events.listen(_onBackgroundEvent);
@@ -63,6 +73,12 @@ class ServerController extends ChangeNotifier {
   String? _notice;
   bool _downloadsSupported = false;
   bool _disposed = false;
+  late final _restartPolicy = NetworkRestartPolicy(
+    restart: (ip) => unawaited(_restartForNetwork(ip)),
+  );
+
+  /// Süren upload/download sayısı (Durdur onayı için).
+  int get activeTransfers => _restartPolicy.activeTransfers;
 
   ServerStatus get status => _status;
   String? get url => _url;
@@ -99,13 +115,14 @@ class ServerController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final server = _server ??= createServer(storage);
+      final server = _server ??= createServer(storage, _restartPolicy);
       _serverSub ??= server.events.listen(_onServerEvent);
       final port = await server.start();
       _url =
           'http://${network.ip}:$port/?${AppConstants.tokenQueryParam}=${server.token}';
       _pin = server.pin;
       _status = ServerStatus.running;
+      _restartPolicy.serverStarted(network.ip);
       await _startBackground('${network.ip}:$port');
     } on ServerStartException catch (e) {
       _fail(e.message, e);
@@ -172,7 +189,32 @@ class ServerController extends ChangeNotifier {
     _notify();
   }
 
+  /// IP değişti: aynı sunucu yeni token/PIN ile yeniden açılır, bildirim
+  /// güncellenir (servis durdurulmaz: Android 14+ arka plandan FGS başlatmaz).
+  Future<void> _restartForNetwork(String ip) async {
+    final server = _server;
+    if (server == null || _status != ServerStatus.running) return;
+    Log.d('Net', 'ip değişti → restart ip=$ip');
+    try {
+      await server.stop();
+      final port = await server.start();
+      _url =
+          'http://$ip:$port/?${AppConstants.tokenQueryParam}=${server.token}';
+      _pin = server.pin;
+      await background?.update('$ip:$port');
+      if (!_events.isClosed) _events.add(NetworkChanged(ip));
+    } catch (e) {
+      _fail('Ağ değişti, sunucu yeniden başlatılamadı', e);
+      _restartPolicy.serverStopped();
+      try {
+        await background?.stop();
+      } catch (_) {}
+    }
+    _notify();
+  }
+
   Future<void> stop() async {
+    _restartPolicy.serverStopped();
     await _server?.stop();
     try {
       await background?.stop();
@@ -194,7 +236,7 @@ class ServerController extends ChangeNotifier {
         _notify();
       case FileUploaded() || FileDeleted():
         unawaited(refreshFiles());
-      case ServerErrorEvent():
+      case ServerErrorEvent() || NetworkChanged():
         break;
     }
     if (!_events.isClosed) _events.add(event);

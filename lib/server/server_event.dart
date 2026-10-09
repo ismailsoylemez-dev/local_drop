@@ -23,3 +23,9 @@ final class ServerErrorEvent extends ServerEvent {
   const ServerErrorEvent(this.message);
   final String message;
 }
+
+/// IP değişti, sunucu yeni adres/token ile yeniden başladı (controller yayar).
+final class NetworkChanged extends ServerEvent {
+  const NetworkChanged(this.ip);
+  final String ip;
+}

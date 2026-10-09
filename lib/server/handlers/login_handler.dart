@@ -7,6 +7,7 @@ import '../../core/constants.dart';
 import '../../core/log.dart';
 import '../../core/secrets.dart';
 import '../auth_middleware.dart';
+import '../rate_limiter.dart';
 import '../responses.dart';
 
 String _page({String? error}) =>
@@ -25,10 +26,13 @@ ${error == null ? '' : '<p style="color:#b00020">$error</p>'}
 
 /// PIN ile cookie alma. PIN doğruysa token cookie'si set edilip `/`'a yönlenir.
 class LoginHandler {
-  LoginHandler({required this.pin, required this.token});
+  LoginHandler({required this.pin, required this.token, required this.limiter});
 
   final String pin;
   final String token;
+
+  /// Engel kontrolü auth ara katmanında; burada yalnız sayılır/sıfırlanır.
+  final RateLimiter limiter;
 
   Response page(Request request) => Response.ok(_page(), headers: htmlHeaders);
 
@@ -43,14 +47,17 @@ class LoginHandler {
     }
     final body = await request.readAsString(utf8);
     final entered = Uri.splitQueryString(body)['pin'] ?? '';
+    final ip = clientIp(request);
     if (!constantTimeEquals(entered, pin)) {
-      Log.d('Auth', 'login: yanlış PIN');
+      limiter.recordFailure(ip);
+      Log.d('Auth', 'login: yanlış PIN ip=$ip');
       return Response(
         HttpStatus.unauthorized,
         body: _page(error: 'PIN hatalı.'),
         headers: htmlHeaders,
       );
     }
+    limiter.reset(ip);
     Log.d('Auth', 'login: PIN doğru');
     return Response.found(
       '/',

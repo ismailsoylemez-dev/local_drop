@@ -28,6 +28,8 @@ class StubController extends ServerController {
   SaveLocation stubSaveLocation = SaveLocation.appFolder;
   final deleted = <String>[];
   int startCalls = 0;
+  int stopCalls = 0;
+  int stubActiveTransfers = 0;
   int clearTextCalls = 0;
 
   @override
@@ -69,6 +71,12 @@ class StubController extends ServerController {
 
   @override
   Future<void> start() async => startCalls++;
+
+  @override
+  Future<void> stop() async => stopCalls++;
+
+  @override
+  int get activeTransfers => stubActiveTransfers;
 
   @override
   void clearText() {

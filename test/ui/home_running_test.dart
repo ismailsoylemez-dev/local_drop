@@ -104,4 +104,42 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   });
+
+  group('Durdur', () {
+    void running(StubController c) {
+      c
+        ..stubStatus = ServerStatus.running
+        ..stubUrl = url
+        ..stubPin = '123456';
+    }
+
+    testWidgets('transfer yokken onaysız durdurur', (tester) async {
+      final c = await pumpWith(tester, running);
+      await tester.tap(buttonWithText<OutlinedButton>('Durdur'));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(c.stopCalls, 1);
+    });
+
+    testWidgets('aktif transfer → onay; Vazgeç durdurmaz, Durdur durdurur', (
+      tester,
+    ) async {
+      final c = await pumpWith(tester, (c) {
+        running(c);
+        c.stubActiveTransfers = 1;
+      });
+      await tester.tap(buttonWithText<OutlinedButton>('Durdur'));
+      await tester.pumpAndSettle();
+      expect(find.text('Aktif transfer iptal edilecek.'), findsOneWidget);
+      await tester.tap(find.text('Vazgeç'));
+      await tester.pumpAndSettle();
+      expect(c.stopCalls, 0);
+
+      await tester.tap(buttonWithText<OutlinedButton>('Durdur'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilledButton, 'Durdur'));
+      await tester.pumpAndSettle();
+      expect(c.stopCalls, 1);
+    });
+  });
 }

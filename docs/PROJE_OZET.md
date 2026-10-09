@@ -1,5 +1,5 @@
 # PROJE ÖZETİ — Local Drop (local_drop)
-<!-- OZET_META: guncelleme=2026-10-09 21:33 | son_kod_commit=(F6 commit'i, hash §12'de düzeltilecek) | faz=F6 tamam, F7 bekliyor -->
+<!-- OZET_META: guncelleme=2026-10-09 22:11 | son_kod_commit=(F7 commit'i, hash §12'de düzeltilecek) | faz=F7 tamam, F8 bekliyor -->
 
 > **TEK GİRİŞ NOKTASI.** Durum, analiz ve iş başlangıcı buradan yapılır; kodu TARAMA.
 > İş kuralları: `docs/AJAN_IS.md` · Analiz: `docs/AJAN_ANALIZ.md` · Faz görevleri ve test senaryoları: `docs/FAZLAR.md` (yalnız ilgili `## F<n>` başlığı okunur).
@@ -46,7 +46,8 @@ lib/
 - main: `StorageService.appDefault()` await → `ServerController(network, storage)`; ServerFactory = `ServerService Function(StorageService)`.
 - MainActivity motoru önbellekte (`provideFlutterEngine`) → kaydırınca sunucu ölmez, süreci FGS tutar. FGS isolate'i yalnız bildirim: Durdur/timeout → `sendDataToMain`.
 - Kotlin `DeviceChannel`: kilitler (PARTIAL + Wi-Fi <API34), saveToDownloads (MediaStore, IS_PENDING, ayrı thread).
-- `WakelockPolicy`: upload begin/finally end, download `trackTransfer`. Upload sonrası `StorageTarget.finalize` (hata → ServerErrorEvent, dosya kalır).
+- Transfer gözlemcisi `MultiTransferObserver([WakelockPolicy, NetworkRestartPolicy])`: upload begin/finally end, download `trackTransfer`. IP değişince aynı sunucu yeni token/PIN ile yeniden açılır (aktif transfer bitene kadar ertelenir), bildirim `update`, olay `NetworkChanged`. ServerFactory = `(storage, transfers)`.
+- `RateLimiter` auth'ta: engelli IP → her istek 429 (+Retry-After); yanlış token/PIN sayılır, doğru sıfırlar. Upload sonrası `StorageTarget.finalize` (hata → ServerErrorEvent, dosya kalır).
 - Tek paylaşım klasörü: PC'den gelenler + telefondan "Bilgisayara gönder"le eklenenler (ikisi de `/api/files`'ta).
 - Sunucu → UI olayları: `Stream<ServerEvent>` (FileUploaded, FileDeleted, TextReceived, ServerErrorEvent) — ServerService.events → ServerController.events.
 - İstek hattı: securityHeaders (her yanıta CSP + nosniff) → errorMiddleware (500 JSON) → authMiddleware (`?t=`/cookie; `/login` muaf; tokensız `GET /` → 302 /login) → shelf_router.
@@ -59,16 +60,16 @@ lib/
 | Dosya | Satır | Görev |
 |---|---|---|
 | lib/main.dart, app.dart | 57+29 | storage/settings load; WakelockPolicy(NativeDeviceChannel), StorageTarget; MultiProvider; MaterialApp M3 teal |
-| lib/core/ | ~380 | constants (§5, 80), log, errors, format (formatSize=JS, formatDate), safe_name, secrets, lan_ip, wakelock_policy (TransferObserver, LockAdapter, WakelockPolicy) |
-| lib/server/ | ~640 | router (CSP/nosniff, error, auth, route'lar; transfers+target param), auth_middleware, responses, server_event, web_ui (378, innerHTML 0) |
-| lib/server/handlers/ | ~410 | login, text (≤64 KB), files (list/download trackTransfer/delete), upload (_BodyGuard, saveStream, _finalize, transfers) |
-| lib/services/ | ~620 | server_service, storage_service (resolve/reserveUnique/list/saveStream/delete), network_service, file_actions, background_service (FGS + task handler), device_channel, settings_service (JSON), storage_target |
-| lib/state/server_controller.dart | 254 | durum, files, lastText, notice, saveLocation/downloadsSupported; start (+FGS, izin) / stop; olaylar; Fgs stop/timeout; import/delete |
-| lib/ui/ | ~640 | home_screen (yerleşim, SnackBar, Ayarlar), settings_screen (RadioGroup kayıt yeri), widgets: status_card (+notice), files_panel, text_banner |
+| lib/core/ | ~410 | constants, log, errors (+isDiskFull), format, safe_name, secrets, lan_ip, wakelock_policy (+MultiTransferObserver) |
+| lib/server/ | ~700 | router, auth_middleware (+rate limit, 429), rate_limiter (59, saat enjekte), responses, server_event (+NetworkChanged), web_ui (378) |
+| lib/server/handlers/ | ~420 | login (PIN sayacı), text, files, upload (_BodyGuard, saveStream, _finalize, 507 disk dolu) |
+| lib/services/ | ~640 | server_service, storage_service (saveStream→writePart, ENOSPC'de .part silinir), network_service, file_actions, background_service (+update), device_channel, settings_service, storage_target |
+| lib/state/ | 296+54 | server_controller (+activeTransfers, _restartForNetwork), network_restart_policy (saf) |
+| lib/ui/ | ~680 | home_screen (+"Ağ değişti, QR yenilendi"), settings_screen, status_card (+Durdur onayı), files_panel (+yer yok), text_banner |
 | android/.../MainActivity.kt, DeviceChannel.kt | 30+126 | motor önbelleği; kilitler + MediaStore |
-| test/unit/ | ~800 | log, pick_lan_ip, network_service, safe_name, unique_name, secrets, format_size, server_controller, controller_events, wakelock_policy(6), storage_target(4), settings_service(3), controller_background(7) |
-| test/server/ | ~440 | handler_test_utils (HandlerFixture), auth(9), files_handler(12), web_ui(5: başlıklar, harici kaynak yok, innerHTML 0), text_handler(8) |
-| test/integration/server_roundtrip_test.dart | 238 | 50 MB, (1), kopma, 413, 5 eşzamanlı, port dolu, token yenileme |
+| test/unit/ | ~800 | log, pick_lan_ip, network_service, safe_name, unique_name, secrets, format_size, server_controller, controller_events, wakelock_policy(6), storage_target(4), settings_service(3), controller_background(7), rate_limiter(9), network_restart(8), device_channel(4) |
+| test/server/ | ~560 | disk_full(4) + | handler_test_utils (HandlerFixture), auth(9), files_handler(12), web_ui(5: başlıklar, harici kaynak yok, innerHTML 0), text_handler(8) |
+| test/integration/ | 238+155 | roundtrip (50 MB, kopma, 413, eşzamanlı, port) + abuse (ham soket: %2e%2e, %252e, mutlak yol, NUL; 20) |
 | test/ui/ | ~340 | test_app, finders, home_screen, home_running, received_list, settings_screen(3) |
 | test/fakes/ | ~170 | FakeNetwork/Server/BackgroundService, StubController |
 
@@ -93,7 +94,8 @@ lib/
 | Token | 16 karakter, Random.secure, base62; her start'ta yeni |
 | PIN | 6 hane, token'dan bağımsız üretilir; yalnız QR okutulamazsa elle giriş (`/login`) |
 | Tek dosya limiti | 4 GB |
-| Yanlış token limiti | IP başına 10 / dk → 429 |
+| Yanlış token/PIN limiti | IP başına 10 / dk (kayan) → 429 + Retry-After |
+| Disk dolu | OS kodu 28/39/112 → 507 "Telefonda yer yok" |
 | Ağ yoklama | 3 sn |
 | Mobil arayüz işaretleri | `rmnet`, `ccmni` (ad içinde geçerse elenir) |
 | Kısmi dosya uzantısı | `.part` |
@@ -116,24 +118,22 @@ lib/
 | Web arayüzü (F4) | ✅ | ✅ | ⏳ |
 | Mobil arayüz (F5) | ✅ | ✅ | ⏳ |
 | Arka plan + depolama (F6) | ✅ | ✅ | ⏳ |
-| Sertleştirme (F7) | ⏳ | ⏳ | ⏳ |
+| Sertleştirme (F7) | ✅ | ✅ (kapsam services+server %85,1) | ⏳ |
 | Yayın hazırlığı (F8) | ⏳ | ⏳ | ⏳ |
 
 ## 7. Alınmış kararlar
 
-- K1: Hedef yalnız Android (iOS Local Network izni ve arka plan kısıtı kapsam dışı).
-- K2: Provider (ChangeNotifier); Riverpod/GetX yok.
-- K3: Token zorunlu; QR'a gömülü. PIN yalnız QR okutulamayan durum için.
-- K4: Alınan dosyalar F3–F5'te uygulama klasöründe; F6'da Download/LocalDrop (MediaStore). MANAGE_EXTERNAL_STORAGE kullanılmaz.
-- K6: IP kaynağı = `NetworkInterface.list` (arayüz adıyla); `getWifiIP()` yalnız `preferred` ipucu. Neden: getWifiIP konum izni istemiyor ama Android 12+'da aktif ağı (Wi-Fi kapalıyken mobil veri) döndürüyor; arayüz adı olmadan mobil veri elenemez. Konum izni istenmez.
-- K7: indirme/silmede ad `safeName(ad) == ad` değilse 400 (düzeltilmez); upload'da ad temizlenir. Bozuk %-kodlu URL'yi shelf zaten Request oluştururken reddeder.
-- K8: T3 içerik doğrulaması sha256 yerine deterministik üreteçle bayt bayt karşılaştırma (crypto paketi eklememek için; daha sıkı).
-- K9: Web UI hiç innerHTML kullanmaz (test sayısı 0). Token cookie'ye alınınca `history.replaceState` ile `?t=` adres çubuğundan silinir. CSP/nosniff tüm yanıtlara eklenir.
-- K10: Telefon→PC: seçilen dosya `readAsByteStream` ile paylaşım klasörüne akışla kopyalanır (`saveStream`, ≤4 GB). Yol referansı tutulmaz: SAF `content://` URI'leri kalıcı yol değil. >500 MB'ta da RAM sorunu yok; bedel diskte çift kopya.
-- K11: open_filex'in eklediği READ_EXTERNAL_STORAGE + READ_MEDIA_IMAGES/VIDEO/AUDIO ana manifestte `tools:node="remove"` (kullanıcı onayı 2026-10-09). Yalnız uygulama klasörü açılır. Birleşik manifest doğrulandı.
-- K5: FGS türü `dataSync` (yerel dosya aktarımı). Android 15 süre limiti → `onDestroy(isTimeout)` → sunucu kapanır, ekranda "Süre doldu, tekrar başlat" (ayrı bildirim için ek paket gerekir, eklenmedi).
-- K12: wakelock_plus yok (Android'de yalnız ekranı açık tutar). CPU+Wi-Fi kilidi native, yalnız transfer sürerken (sayaç). FGS allowWakeLock/WifiLock kapalı. RECEIVE_BOOT_COMPLETED + RebootReceiver `tools:node="remove"`. Plan onayı 2026-10-09.
-- K13: İndirilenler (Android 10+): biten dosya MediaStore'a taşınır, uygulama/PC listesinde görünmez. Ayar SharedPreferences yerine JSON dosya (paket F8'de).
+- K1: Yalnız Android. K2: Provider. K3: Token zorunlu (QR'da); PIN yalnız QR okutulamazsa. K4: MANAGE_EXTERNAL_STORAGE yok.
+- K5: FGS `dataSync`. Android 15 süre limiti → `onDestroy(isTimeout)` → sunucu kapanır, ekranda "Süre doldu, tekrar başlat" (ayrı bildirim = ek paket, yok).
+- K6: IP = `NetworkInterface.list` (arayüz adıyla); `getWifiIP()` yalnız ipucu (Android 12+'da mobil veriyi döndürebilir). Konum izni yok.
+- K7: indirme/silmede `safeName(ad) != ad` → 400; upload'da ad temizlenir.
+- K8: T3 içerik = deterministik üreteçle bayt bayt (crypto paketi yok).
+- K9: Web UI innerHTML 0; `?t=` `replaceState` ile silinir; CSP/nosniff her yanıtta.
+- K10: Telefon→PC: `readAsByteStream` ile klasöre akışla kopya; yol referansı yok (SAF URI kalıcı değil).
+- K11: open_filex'in READ_EXTERNAL_STORAGE + READ_MEDIA_* izinleri `tools:node="remove"` (onaylı).
+- K12: wakelock_plus yok (yalnız ekran). CPU+Wi-Fi kilidi native, yalnız transfer sürerken. Boot alıcısı + izni kaldırıldı (onaylı).
+- K13: İndirilenler (10+): biten dosya MediaStore'a taşınır, listelerde görünmez. Ayar JSON dosyada (SharedPreferences F8).
+- K14: Engelli IP doğru token ile de 429. Kimliksiz `GET /` sayılmaz. NUL'lu multipart adı → 400. Kapsam: `flutter test --coverage` + lcov; background_service/file_actions yalnız cihazda.
 
 ## 8. AÇIK BULGULAR (S-n: şüphe, B-n: doğrulanmış)
 
@@ -166,13 +166,16 @@ lib/
 14. F6: Ayarlar → İndirilenler → PC'den yükle → Dosyalar > Download/LocalDrop'ta (`Storage downloads name=`).
 15. F6: Bildirim izni reddet → sunucu çalışır, kartta "Bildirim izni yok…" uyarısı.
 16. F6: cleartext kaldırıldı → 4. maddedeki curl komutları aynen çalışır.
+17. F7: Transfer sırasında Wi-Fi değiştir → transfer hata, yeni QR + "Ağ değişti, QR yenilendi", yarım dosya listede yok (`Net ip değişti → restart`).
+18. F7: Depolama doluyken yükle → PC'de "Telefonda yer yok" (507).
+19. F7: Yanlış token ile 11 istek → 429 + Retry-After; transfer sürerken Durdur → onay penceresi.
 
 ## 10. COMMIT GÜNLÜĞÜ (eski → yeni)
 
 | Commit | Faz | Özet |
 |---|---|---|
-| b52ff2e…5b16e45 | F0–F5 | ilk commit … F4 web (14d508f), özet (4269b26), F5 mobil arayüz (5b16e45); hepsi dev + main'de |
-| (bu commit) | F6 | feat(android): FGS, transfer kilitleri, İndirilenler, ayarlar, cleartext kaldırıldı |
+| b52ff2e…9828744 | F0–F6 | … F5 mobil (5b16e45), F6 arka plan (9828744); hepsi dev + main'de |
+| (bu commit) | F7 | feat(hardening): rate limit, disk dolu, ağ değişiminde yeniden başlatma, kapsam |
 
 ## 11. Ortam / cihaz notları
 
@@ -185,5 +188,5 @@ lib/
 
 ## 12. İŞLEM GÜNLÜĞÜ (her iş 1 satır, en yeni altta)
 <!-- format: YYYY-MM-DD HH:mm | hash/commitlenmedi | iş | kod: dosyalar | test: dosyalar | analyze/test | sonuç -->
-<!-- 2026-10-09 20:33–21:17 | b52ff2e…5b16e45 | kurulum, F0–F5 | ayrıntı: §3, §7 (K6–K11), §10 | analyze/test: OK (98) -->
-<!-- 2026-10-09 21:33 | (bu commit) | F6 arka plan + depolama | kod: MainActivity/DeviceChannel.kt, manifest, background/device_channel/settings/storage_target servisleri, wakelock_policy, handler'lar, controller, settings_screen | test: +23 (121) | analyze/test/apk: OK; birleşik manifest doğrulandı | K5, K12, K13; S1 kapandı -->
+<!-- 2026-10-09 20:33–21:33 | b52ff2e…9828744 | kurulum, F0–F6 | ayrıntı: §3, §7, §10 | analyze/test: OK (121) -->
+<!-- 2026-10-09 22:11 | (bu commit) | F7 sertleştirme | kod: rate_limiter, auth/login, errors.isDiskFull, storage.writePart, upload 507, network_restart_policy, controller restart, status_card onay | test: +49 (170) | analyze/test: OK; kapsam services+server 85,1% | K14 -->

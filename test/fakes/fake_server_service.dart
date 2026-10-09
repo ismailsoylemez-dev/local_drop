@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:async';
 
 import 'package:local_drop/server/server_event.dart';
@@ -10,6 +11,8 @@ class FakeServerService extends ServerService {
 
   final eventsController = StreamController<ServerEvent>.broadcast();
   bool running = false;
+  int startCount = 0;
+  bool failNextStart = false;
 
   @override
   Stream<ServerEvent> get events => eventsController.stream;
@@ -24,6 +27,11 @@ class FakeServerService extends ServerService {
 
   @override
   Future<int> start() async {
+    if (failNextStart) {
+      failNextStart = false;
+      throw const SocketException('port alınamadı');
+    }
+    startCount++;
     running = true;
     return 8080;
   }

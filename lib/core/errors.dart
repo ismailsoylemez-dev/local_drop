@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'constants.dart';
+
 /// Sunucu açılamadı (ör. port aralığı dolu). [message] kullanıcıya gösterilir.
 class ServerStartException implements Exception {
   const ServerStartException(this.message);
@@ -24,3 +28,8 @@ class FileTooLargeException implements Exception {
   @override
   String toString() => 'FileTooLargeException: >$maxBytes bayt';
 }
+
+/// Yazma hatası "disk dolu" mu (ENOSPC)?
+bool isDiskFull(Object error) =>
+    error is FileSystemException &&
+    AppConstants.diskFullErrorCodes.contains(error.osError?.errorCode);

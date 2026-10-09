@@ -24,6 +24,9 @@ abstract interface class BackgroundService {
   /// Başarısızsa hata mesajı, başarılıysa null.
   Future<String?> start(String address);
 
+  /// Bildirim metnini günceller (ör. IP değişti).
+  Future<void> update(String address);
+
   Future<void> stop();
 }
 
@@ -93,6 +96,13 @@ class ForegroundBackgroundService implements BackgroundService {
     }
     Log.d('Fgs', 'started $address');
     return null;
+  }
+
+  @override
+  Future<void> update(String address) async {
+    if (!await FlutterForegroundTask.isRunningService) return;
+    await FlutterForegroundTask.updateService(notificationText: address);
+    Log.d('Fgs', 'updated $address');
   }
 
   @override

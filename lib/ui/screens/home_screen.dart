@@ -41,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final message = switch (event) {
       FileUploaded(:final name) => '$name alındı',
       ServerErrorEvent(:final message) => message,
+      NetworkChanged() => 'Ağ değişti, QR yenilendi',
       FileDeleted() || TextReceived() => null,
     };
     if (message == null) return;

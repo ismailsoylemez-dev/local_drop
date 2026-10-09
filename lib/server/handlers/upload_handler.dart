@@ -133,8 +133,10 @@ class UploadHandler {
       }
     } on FileTooLargeException {
       return _tooLarge();
-    } on FileSystemException {
-      rethrow;
+    } on FileSystemException catch (e) {
+      if (!isDiskFull(e)) rethrow;
+      Log.d('Upload', 'disk full');
+      return jsonError(HttpStatus.insufficientStorage, 'Telefonda yer yok');
     } catch (e) {
       Log.d('Upload', 'aborted: $e');
       return jsonError(HttpStatus.badRequest, 'Yükleme yarıda kaldı');

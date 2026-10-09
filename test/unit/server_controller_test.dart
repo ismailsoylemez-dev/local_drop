@@ -37,11 +37,12 @@ void main() {
     () async {
       late ServerService server;
       final c = await connected(
-        (s) => server = ServerService(
+        (s, t) => server = ServerService(
           storage: s,
           address: InternetAddress.loopbackIPv4,
           portStart: 0,
           portEnd: 0,
+          transfers: t,
         ),
       );
 
@@ -62,7 +63,7 @@ void main() {
 
   test('ServerStartException → error + mesaj, tekrar başlatılabilir', () async {
     final c = await connected(
-      (_) => throw const ServerStartException('Port bulunamadı'),
+      (_, _) => throw const ServerStartException('Port bulunamadı'),
     );
     await c.start();
     expect(c.status, ServerStatus.error);
@@ -77,7 +78,7 @@ void main() {
     final c = ServerController(
       network: network,
       storage: storage,
-      createServer: (_) {
+      createServer: (_, _) {
         created = true;
         throw StateError('çağrılmamalı');
       },

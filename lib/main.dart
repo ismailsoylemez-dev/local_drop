@@ -46,8 +46,11 @@ Future<void> main() async {
             settings: settings,
             mediaStore: device,
             background: ForegroundBackgroundService(),
-            createServer: (s) =>
-                ServerService(storage: s, transfers: transfers, target: target),
+            createServer: (s, restart) => ServerService(
+              storage: s,
+              transfers: MultiTransferObserver([transfers, restart]),
+              target: target,
+            ),
           ),
         ),
       ],

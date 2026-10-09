@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:local_drop/core/wakelock_policy.dart';
+import 'package:local_drop/server/rate_limiter.dart';
 import 'package:local_drop/server/router.dart';
 import 'package:local_drop/server/server_event.dart';
 import 'package:local_drop/services/storage_service.dart';
@@ -24,6 +25,7 @@ class HandlerFixture {
     int maxFileBytes = 1 << 20,
     TransferObserver transfers = const NoopTransferObserver(),
     StorageTarget? target,
+    RateLimiter? limiter,
   }) async {
     final dir = await Directory.systemTemp.createTemp('ld_handler_');
     final root = Directory('${dir.path}${Platform.pathSeparator}received');
@@ -38,6 +40,7 @@ class HandlerFixture {
       onEvent: events.add,
       transfers: transfers,
       target: target,
+      limiter: limiter,
     );
     return HandlerFixture._(dir, storage, handler, events);
   }
@@ -48,6 +51,7 @@ class HandlerFixture {
     bool auth = true,
     Map<String, String>? headers,
     Object? body,
+    String? ip,
   }) async {
     final sep = path.contains('?') ? '&' : '?';
     final url = auth ? '$path${sep}t=$testToken' : path;
@@ -57,6 +61,9 @@ class HandlerFixture {
         Uri.parse('http://localhost$url'),
         headers: headers,
         body: body,
+        context: {
+          if (ip != null) 'shelf.io.connection_info': FakeConnectionInfo(ip),
+        },
       ),
     );
   }
@@ -82,3 +89,15 @@ List<int> multipartBody(String filename, List<int> content) => [
 const multipartHeaders = {
   'content-type': 'multipart/form-data; boundary=$boundary',
 };
+
+/// shelf_io'nun koyduğu bağlantı bilgisi (istemci IP'si için).
+class FakeConnectionInfo implements HttpConnectionInfo {
+  FakeConnectionInfo(String ip) : remoteAddress = InternetAddress(ip);
+
+  @override
+  final InternetAddress remoteAddress;
+  @override
+  int get remotePort => 50000;
+  @override
+  int get localPort => 8080;
+}

@@ -12,6 +12,7 @@ import 'auth_middleware.dart';
 import 'handlers/files_handler.dart';
 import 'handlers/login_handler.dart';
 import 'handlers/text_handler.dart';
+import 'rate_limiter.dart';
 import 'handlers/upload_handler.dart';
 import 'responses.dart';
 import 'server_event.dart';
@@ -57,7 +58,9 @@ Handler buildHandler({
   int maxFileBytes = AppConstants.maxFileBytes,
   TransferObserver transfers = const NoopTransferObserver(),
   StorageTarget? target,
+  RateLimiter? limiter,
 }) {
+  final rateLimiter = limiter ?? RateLimiter();
   final files = FilesHandler(
     storage: storage,
     onEvent: onEvent,
@@ -70,7 +73,7 @@ Handler buildHandler({
     transfers: transfers,
     target: target,
   );
-  final login = LoginHandler(pin: pin, token: token);
+  final login = LoginHandler(pin: pin, token: token, limiter: rateLimiter);
   final text = TextHandler(onEvent: onEvent);
 
   final router =
@@ -89,6 +92,6 @@ Handler buildHandler({
   return const Pipeline()
       .addMiddleware(securityHeaders())
       .addMiddleware(errorMiddleware())
-      .addMiddleware(authMiddleware(token: token))
+      .addMiddleware(authMiddleware(token: token, limiter: rateLimiter))
       .addHandler(router.call);
 }

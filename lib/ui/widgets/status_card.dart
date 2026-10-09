@@ -72,7 +72,7 @@ class StatusCard extends StatelessWidget {
           const SizedBox(height: 8),
         ],
         OutlinedButton.icon(
-          onPressed: c.stop,
+          onPressed: () => _confirmStop(context, c),
           icon: const Icon(Icons.stop),
           label: const Text('Durdur'),
         ),
@@ -123,6 +123,31 @@ class StatusCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Transfer sürüyorsa önce onay ister.
+  Future<void> _confirmStop(BuildContext context, ServerController c) async {
+    if (c.activeTransfers > 0) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Sunucu durdurulsun mu?'),
+          content: const Text('Aktif transfer iptal edilecek.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Vazgeç'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Durdur'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true) return;
+    }
+    await c.stop();
   }
 
   Future<void> _copyUrl(BuildContext context, String? url) async {

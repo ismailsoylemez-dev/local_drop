@@ -42,3 +42,24 @@ class NoopTransferObserver implements TransferObserver {
   @override
   void end() {}
 }
+
+/// Birden çok gözlemciye dağıtır (kilit politikası + ağ yeniden başlatma).
+class MultiTransferObserver implements TransferObserver {
+  const MultiTransferObserver(this.observers);
+
+  final List<TransferObserver> observers;
+
+  @override
+  void begin() {
+    for (final o in observers) {
+      o.begin();
+    }
+  }
+
+  @override
+  void end() {
+    for (final o in observers) {
+      o.end();
+    }
+  }
+}

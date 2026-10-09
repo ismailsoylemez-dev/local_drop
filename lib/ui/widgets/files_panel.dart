@@ -48,6 +48,10 @@ class _FilesPanelState extends State<FilesPanel> {
       } on FileTooLargeException {
         error = '${file.name}: dosya çok büyük';
       } catch (e) {
+        if (isDiskFull(e)) {
+          error = 'Telefonda yer yok';
+          break;
+        }
         Log.d('Files', 'import hata ${file.name}: $e');
         error = '${file.name} eklenemedi';
       }

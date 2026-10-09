@@ -41,7 +41,7 @@ void main() {
     final c = ServerController(
       network: network,
       storage: StorageService(Directory('${tmp.path}/r')),
-      createServer: (s) => server = FakeServerService(s),
+      createServer: (s, _) => server = FakeServerService(s),
       background: bg,
       settings: settings,
       mediaStore: _Media(downloads),

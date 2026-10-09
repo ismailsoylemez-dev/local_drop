@@ -8,6 +8,7 @@ class FakeBackgroundService implements BackgroundService {
   String? startError;
   final started = <String>[];
   int stopCalls = 0;
+  final updated = <String>[];
 
   @override
   Stream<BackgroundEvent> get events => eventsController.stream;
@@ -20,6 +21,9 @@ class FakeBackgroundService implements BackgroundService {
     started.add(address);
     return startError;
   }
+
+  @override
+  Future<void> update(String address) async => updated.add(address);
 
   @override
   Future<void> stop() async => stopCalls++;

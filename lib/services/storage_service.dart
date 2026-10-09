@@ -87,10 +87,10 @@ class StorageService {
     await ensureExists();
     final unique = reserveUnique(name);
     final part = partFileFor(unique);
-    final sink = part.openWrite();
     var bytes = 0;
     try {
-      await sink.addStream(
+      await writePart(
+        part,
         data.map((chunk) {
           bytes += chunk.length;
           if (maxBytes != null && bytes > maxBytes) {
@@ -99,10 +99,10 @@ class StorageService {
           return chunk;
         }),
       );
-      await sink.close();
       await part.rename(resolve(unique).path);
-    } catch (_) {
-      await _discard(sink, part);
+    } catch (e) {
+      if (isDiskFull(e)) Log.d('Storage', 'disk dolu name=$unique');
+      await _deletePart(part);
       rethrow;
     } finally {
       release(unique);
@@ -110,10 +110,21 @@ class StorageService {
     return (name: unique, bytes: bytes);
   }
 
-  Future<void> _discard(IOSink sink, File part) async {
+  /// Akışı [part]'a yazar ve kapatır. Testler disk hatası için ezer.
+  Future<void> writePart(File part, Stream<List<int>> data) async {
+    final sink = part.openWrite();
     try {
+      await sink.addStream(data);
       await sink.close();
-    } catch (_) {}
+    } catch (_) {
+      try {
+        await sink.close();
+      } catch (_) {}
+      rethrow;
+    }
+  }
+
+  Future<void> _deletePart(File part) async {
     try {
       if (await part.exists()) await part.delete();
     } catch (e) {
