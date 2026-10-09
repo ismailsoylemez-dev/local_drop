@@ -1,5 +1,5 @@
 # PROJE ÖZETİ — Local Drop (local_drop)
-<!-- OZET_META: guncelleme=2026-10-09 20:33 | son_kod_commit=(F0 commit'i, hash §12'de düzeltilecek) | faz=F0 tamam, F1 bekliyor -->
+<!-- OZET_META: guncelleme=2026-10-09 20:38 | son_kod_commit=(F1 commit'i, hash §12'de düzeltilecek) | faz=F1 tamam, F2 bekliyor -->
 
 > **TEK GİRİŞ NOKTASI.** Durum, analiz ve iş başlangıcı buradan yapılır; kodu TARAMA.
 > İş kuralları: `docs/AJAN_IS.md` · Analiz: `docs/AJAN_ANALIZ.md` · Faz görevleri ve test senaryoları: `docs/FAZLAR.md` (yalnız ilgili `## F<n>` başlığı okunur).
@@ -29,8 +29,8 @@ Flutter (Dart, null safety) **Android** uygulaması. Telefon, uygulamanın için
 Paket adı: `local_drop` · applicationId: F8'de `com.ismail.localdrop` · Dart SDK ^3.13.1 (dot-shorthand var).
 Branch: `dev` (push YOK).
 
-Bağımlılıklar (mevcut): shelf, shelf_router, shelf_multipart (2.x — API 1.x'ten farklı, lock'taki sürüme göre yaz), network_info_plus, qr_flutter, path_provider.
-Planlanan: provider (F1), open_filex + share_plus + file_picker (F5), foreground task + wakelock (F6).
+Bağımlılıklar (mevcut): shelf, shelf_router, shelf_multipart (2.x — API 1.x'ten farklı, lock'taki sürüme göre yaz), network_info_plus, qr_flutter, path_provider, provider ^6.1.5+1.
+Planlanan: open_filex + share_plus + file_picker (F5), foreground task + wakelock (F6).
 
 ## 2. Mimari (hedef)
 
@@ -49,7 +49,16 @@ lib/
 
 ## 3. Dosya haritası
 
-(F1 sonrası doldurulur: dosya — satır sayısı — görev)
+| Dosya | Satır | Görev |
+|---|---|---|
+| lib/main.dart | 14 | runApp + ChangeNotifierProvider<ServerController> |
+| lib/app.dart | 29 | LocalDropApp: MaterialApp, M3, seed teal, light/dark |
+| lib/core/constants.dart | 38 | AppConstants (§5) |
+| lib/core/log.dart | 20 | Log.d (kDebugMode), Log.mask |
+| lib/state/server_controller.dart | 33 | ServerStatus enum; status/url/pin/errorMessage; start/stop stub |
+| lib/ui/screens/home_screen.dart | 32 | "Sunucu kapalı" + Başlat |
+| test/ui/home_screen_test.dart | 22 | widget: başlık, metin, buton |
+| test/unit/log_test.dart | 12 | mask |
 
 ## 4. Değişmez kurallar
 
@@ -81,7 +90,7 @@ lib/
 
 | Özellik | Kod | Test | Cihazda |
 |---|---|---|---|
-| İskelet + Provider (F1) | ⏳ | ⏳ | ⏳ |
+| İskelet + Provider (F1) | ✅ | ✅ | ⏳ |
 | IP tespiti (F2) | ⏳ | ⏳ | ⏳ |
 | HTTP sunucu + token (F3) | ⏳ | ⏳ | ⏳ |
 | Web arayüzü (F4) | ⏳ | ⏳ | ⏳ |
@@ -101,17 +110,20 @@ lib/
 ## 8. AÇIK BULGULAR (S-n: şüphe, B-n: doğrulanmış)
 
 - S1 🟢 `usesCleartextTraffic="true"` global açık. Gelen sunucu trafiğini etkilemez; gereksizse F6'da kaldırılacak.
-- S2 🟢 lib/main.dart varsayılan counter demo; README şablon. F1'de temizlenecek.
 
 ## 9. CİHAZDA BEKLEYEN DOĞRULAMALAR
 
 (Her faz kendi maddelerini FAZLAR.md "Cihaz" bölümünden buraya ekler; doğrulanınca silinir.)
 
+1. F1: Uygulama açılıyor, Local Drop başlığı ve Başlat butonu görünüyor.
+
 ## 10. COMMIT GÜNLÜĞÜ (eski → yeni)
 
 | Commit | Faz | Özet |
 |---|---|---|
-| (bu commit) | F0 | chore: ilk commit + ajan dokumanlari (repo, dev branch, .gitignore) |
+| b52ff2e | F0 | chore: ilk commit + ajan dokumanlari (repo, dev branch, .gitignore) |
+| e3e5df7, 6582d22 | — | GitHub main birleştirme (README 1 satır) |
+| (bu commit) | F1 | feat(app): iskelet, Provider, sabitler, log |
 
 ## 11. Ortam / cihaz notları
 
@@ -125,5 +137,5 @@ lib/
 ## 12. İŞLEM GÜNLÜĞÜ (her iş 1 satır, en yeni altta)
 <!-- format: YYYY-MM-DD HH:mm | hash/commitlenmedi | iş | kod: dosyalar | test: dosyalar | analyze/test | sonuç -->
 <!-- 2026-10-09 20:40 | commitlenmedi | docs/kurulum | kod: yok | özet + AJAN_IS + AJAN_ANALIZ + FAZLAR oluşturuldu -->
-<!-- 2026-10-09 20:33 | (bu commit) | F0 repo kurulumu | kod: .gitignore (+imza/ajan satırları), CLAUDE.md (ignore) | test: yok | analyze/test: — | dev branch, ilk commit; platform klasörleri + pubspec.lock + .metadata da (değiştirilmeden) eklendi, temiz ağaç için -->
-
+<!-- 2026-10-09 20:33 | b52ff2e | F0 repo kurulumu | kod: .gitignore (+imza/ajan satırları), CLAUDE.md (ignore) | test: yok | analyze/test: — | dev branch, ilk commit; platform klasörleri + pubspec.lock + .metadata da (değiştirilmeden) eklendi, temiz ağaç için -->
+<!-- 2026-10-09 20:38 | (bu commit) | F1 iskelet | kod: main.dart, app.dart, core/constants.dart, core/log.dart, state/server_controller.dart, ui/screens/home_screen.dart, README; widget_test.dart silindi | test: home_screen_test(+1), log_test(+2) | analyze/test: OK | demo kaldırıldı, Provider iskeleti kuruldu -->
