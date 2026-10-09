@@ -5,7 +5,9 @@ import 'package:shelf_router/shelf_router.dart';
 
 import '../core/constants.dart';
 import '../core/log.dart';
+import '../core/wakelock_policy.dart';
 import '../services/storage_service.dart';
+import '../services/storage_target.dart';
 import 'auth_middleware.dart';
 import 'handlers/files_handler.dart';
 import 'handlers/login_handler.dart';
@@ -53,12 +55,20 @@ Handler buildHandler({
   required String pin,
   required void Function(ServerEvent) onEvent,
   int maxFileBytes = AppConstants.maxFileBytes,
+  TransferObserver transfers = const NoopTransferObserver(),
+  StorageTarget? target,
 }) {
-  final files = FilesHandler(storage: storage, onEvent: onEvent);
+  final files = FilesHandler(
+    storage: storage,
+    onEvent: onEvent,
+    transfers: transfers,
+  );
   final upload = UploadHandler(
     storage: storage,
     maxFileBytes: maxFileBytes,
     onEvent: onEvent,
+    transfers: transfers,
+    target: target,
   );
   final login = LoginHandler(pin: pin, token: token);
   final text = TextHandler(onEvent: onEvent);

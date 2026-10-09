@@ -7,9 +7,11 @@ import '../core/constants.dart';
 import '../core/errors.dart';
 import '../core/log.dart';
 import '../core/secrets.dart';
+import '../core/wakelock_policy.dart';
 import '../server/router.dart';
 import '../server/server_event.dart';
 import 'storage_service.dart';
+import 'storage_target.dart';
 
 /// shelf sunucusunun yaşam döngüsü. Her [start]'ta yeni token + PIN.
 class ServerService {
@@ -19,6 +21,8 @@ class ServerService {
     this.portStart = AppConstants.portRangeStart,
     this.portEnd = AppConstants.portRangeEnd,
     this.maxFileBytes = AppConstants.maxFileBytes,
+    this.transfers = const NoopTransferObserver(),
+    this.target,
   }) : address = address ?? InternetAddress.anyIPv4;
 
   final StorageService storage;
@@ -26,6 +30,8 @@ class ServerService {
   final int portStart;
   final int portEnd;
   final int maxFileBytes;
+  final TransferObserver transfers;
+  final StorageTarget? target;
 
   final _events = StreamController<ServerEvent>.broadcast();
   HttpServer? _server;
@@ -50,6 +56,8 @@ class ServerService {
       pin: pin,
       maxFileBytes: maxFileBytes,
       onEvent: _events.add,
+      transfers: transfers,
+      target: target,
     );
 
     for (var port = portStart; port <= portEnd; port++) {

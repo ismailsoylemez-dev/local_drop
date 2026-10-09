@@ -60,6 +60,17 @@ class StatusCard extends StatelessWidget {
           style: textTheme.headlineMedium?.copyWith(letterSpacing: 4),
         ),
         const SizedBox(height: 12),
+        if (c.notice case final notice?) ...[
+          Text(
+            notice,
+            key: const Key('server-notice'),
+            style: textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.error,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+        ],
         OutlinedButton.icon(
           onPressed: c.stop,
           icon: const Icon(Icons.stop),

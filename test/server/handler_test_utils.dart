@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:local_drop/core/wakelock_policy.dart';
 import 'package:local_drop/server/router.dart';
 import 'package:local_drop/server/server_event.dart';
 import 'package:local_drop/services/storage_service.dart';
+import 'package:local_drop/services/storage_target.dart';
 import 'package:shelf/shelf.dart';
 
 const testToken = 'TestToken1234567';
@@ -18,7 +20,11 @@ class HandlerFixture {
   final Handler handler;
   final List<ServerEvent> events;
 
-  static Future<HandlerFixture> create({int maxFileBytes = 1 << 20}) async {
+  static Future<HandlerFixture> create({
+    int maxFileBytes = 1 << 20,
+    TransferObserver transfers = const NoopTransferObserver(),
+    StorageTarget? target,
+  }) async {
     final dir = await Directory.systemTemp.createTemp('ld_handler_');
     final root = Directory('${dir.path}${Platform.pathSeparator}received');
     final storage = StorageService(root);
@@ -30,6 +36,8 @@ class HandlerFixture {
       pin: testPin,
       maxFileBytes: maxFileBytes,
       onEvent: events.add,
+      transfers: transfers,
+      target: target,
     );
     return HandlerFixture._(dir, storage, handler, events);
   }

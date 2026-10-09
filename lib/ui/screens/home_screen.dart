@@ -9,6 +9,7 @@ import '../../state/server_controller.dart';
 import '../widgets/files_panel.dart';
 import '../widgets/status_card.dart';
 import '../widgets/text_banner.dart';
+import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -55,7 +56,18 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text(AppConstants.appTitle)),
+      appBar: AppBar(
+        title: const Text(AppConstants.appTitle),
+        actions: [
+          IconButton(
+            tooltip: 'Ayarlar',
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const SettingsScreen()),
+            ),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {

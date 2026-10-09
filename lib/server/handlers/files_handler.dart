@@ -1,19 +1,26 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:shelf/shelf.dart';
 
 import '../../core/errors.dart';
 import '../../core/log.dart';
+import '../../core/wakelock_policy.dart';
 import '../../services/storage_service.dart';
 import '../responses.dart';
 import '../server_event.dart';
 
 /// Liste, indirme ve silme.
 class FilesHandler {
-  FilesHandler({required this.storage, required this.onEvent});
+  FilesHandler({
+    required this.storage,
+    required this.onEvent,
+    this.transfers = const NoopTransferObserver(),
+  });
 
   final StorageService storage;
   final void Function(ServerEvent) onEvent;
+  final TransferObserver transfers;
 
   Future<Response> list(Request request) async {
     final files = await storage.list();
@@ -37,7 +44,7 @@ class FilesHandler {
     final length = await file.length();
     Log.d('Download', 'name=$name bytes=$length');
     return Response.ok(
-      file.openRead(),
+      trackTransfer(file.openRead(), transfers),
       headers: {
         HttpHeaders.contentTypeHeader: 'application/octet-stream',
         HttpHeaders.contentLengthHeader: '$length',
@@ -71,4 +78,43 @@ class FilesHandler {
       return null;
     }
   }
+}
+
+/// Akış dinlendiği anda transfer başlar; bitiş, hata veya iptalde (istemci
+/// koptu) tam bir kez biter.
+Stream<List<int>> trackTransfer(
+  Stream<List<int>> source,
+  TransferObserver transfers,
+) {
+  var ended = false;
+  void end() {
+    if (ended) return;
+    ended = true;
+    transfers.end();
+  }
+
+  late StreamSubscription<List<int>> sub;
+  final controller = StreamController<List<int>>();
+  controller
+    ..onListen = () {
+      transfers.begin();
+      sub = source.listen(
+        controller.add,
+        onError: (Object e, StackTrace st) {
+          end();
+          controller.addError(e, st);
+        },
+        onDone: () {
+          end();
+          controller.close();
+        },
+      );
+    }
+    ..onPause = (() => sub.pause())
+    ..onResume = (() => sub.resume())
+    ..onCancel = () {
+      end();
+      return sub.cancel();
+    };
+  return controller.stream;
 }

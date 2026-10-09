@@ -53,6 +53,25 @@ abstract final class AppConstants {
   /// Web arayüzünün dosya listesini yenileme aralığı (ms).
   static const int webListRefreshMs = 5000;
 
+  /// Kotlin `DeviceChannel` (kilitler + MediaStore).
+  static const String deviceChannel = 'local_drop/device';
+
+  /// İndirilenler seçiliyse dosyaların gittiği alt klasör: Download/LocalDrop.
+  static const String downloadsSubfolder = 'LocalDrop';
+
+  /// Ayarların tutulduğu dosya (uygulama belgeleri altında).
+  static const String settingsFileName = 'settings.json';
+
+  /// Ön plan servisi bildirimi.
+  static const int fgsServiceId = 256;
+  static const String fgsChannelId = 'local_drop_server';
+  static const String fgsChannelName = 'Sunucu';
+  static const String fgsStopButtonId = 'stop';
+
+  /// Ön plan servisinden ana isolate'e giden mesajlar.
+  static const String fgsMsgStop = 'stop';
+  static const String fgsMsgTimeout = 'timeout';
+
   /// Log öneki: [LD/<alan>].
   static const String logPrefix = 'LD';
 

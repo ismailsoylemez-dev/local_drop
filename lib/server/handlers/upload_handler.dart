@@ -6,7 +6,9 @@ import 'package:shelf_multipart/shelf_multipart.dart';
 
 import '../../core/errors.dart';
 import '../../core/log.dart';
+import '../../core/wakelock_policy.dart';
 import '../../services/storage_service.dart';
+import '../../services/storage_target.dart';
 import '../responses.dart';
 import '../server_event.dart';
 
@@ -84,11 +86,17 @@ class UploadHandler {
     required this.storage,
     required this.maxFileBytes,
     required this.onEvent,
+    this.transfers = const NoopTransferObserver(),
+    this.target,
   });
 
   final StorageService storage;
   final int maxFileBytes;
   final void Function(ServerEvent) onEvent;
+  final TransferObserver transfers;
+
+  /// null → dosyalar uygulama klasöründe kalır.
+  final StorageTarget? target;
 
   Future<Response> call(Request request) async {
     final length = request.contentLength;
@@ -105,6 +113,7 @@ class UploadHandler {
     }
 
     final saved = <String>[];
+    transfers.begin();
     try {
       await for (final data in form.formData) {
         final filename = data.filename;
@@ -118,6 +127,7 @@ class UploadHandler {
           maxBytes: maxFileBytes,
         );
         Log.d('Upload', 'done name=${file.name} bytes=${file.bytes}');
+        await _finalize(file.name);
         onEvent(FileUploaded(file.name, file.bytes));
         saved.add(file.name);
       }
@@ -128,8 +138,25 @@ class UploadHandler {
     } catch (e) {
       Log.d('Upload', 'aborted: $e');
       return jsonError(HttpStatus.badRequest, 'Yükleme yarıda kaldı');
+    } finally {
+      transfers.end();
     }
     return jsonOk({'files': saved});
+  }
+
+  /// İndirilenler seçiliyse tamamlanmış dosyayı taşır; hata → dosya uygulama
+  /// klasöründe kalır, kullanıcıya olay gider (yükleme yine başarılı).
+  Future<void> _finalize(String name) async {
+    final target = this.target;
+    if (target == null) return;
+    try {
+      await target.finalize(storage.resolve(name), name);
+    } catch (e) {
+      Log.d('Storage', 'downloads hata name=$name: $e');
+      onEvent(
+        ServerErrorEvent("$name İndirilenler'e taşınamadı, uygulamada kaldı"),
+      );
+    }
   }
 
   Response _tooLarge() =>

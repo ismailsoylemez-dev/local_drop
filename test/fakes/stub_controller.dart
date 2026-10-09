@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:local_drop/services/network_service.dart';
 import 'package:local_drop/services/storage_service.dart';
+import 'package:local_drop/services/storage_target.dart';
 import 'package:local_drop/state/server_controller.dart';
 
 import 'fake_network_service.dart';
@@ -22,6 +23,9 @@ class StubController extends ServerController {
   NetworkResult? stubNetwork = const Connected('192.168.1.20');
   List<StoredFile> stubFiles = const [];
   String? stubText;
+  String? stubNotice;
+  bool stubDownloadsSupported = true;
+  SaveLocation stubSaveLocation = SaveLocation.appFolder;
   final deleted = <String>[];
   int startCalls = 0;
   int clearTextCalls = 0;
@@ -40,6 +44,19 @@ class StubController extends ServerController {
   List<StoredFile> get files => stubFiles;
   @override
   String? get lastText => stubText;
+  @override
+  String? get notice => stubNotice;
+  @override
+  bool get downloadsSupported => stubDownloadsSupported;
+  @override
+  SaveLocation get saveLocation => stubSaveLocation;
+
+  @override
+  Future<void> setSaveLocation(SaveLocation value) async {
+    stubSaveLocation = value;
+    notifyListeners();
+  }
+
   @override
   bool get canStart =>
       stubNetwork is Connected &&
