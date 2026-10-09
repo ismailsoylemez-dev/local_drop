@@ -190,7 +190,7 @@ lib/
 | 1375142 | F1 | feat(app): iskelet, Provider, sabitler, log (origin/dev'e push edildi) |
 | d3d42d4 | F2 | feat(net): IP tespiti + ağ durumu akışı (dev + main push) |
 | 5af0001 | F3 | feat(server): shelf sunucu, token/PIN, upload/download/delete (dev + main push) |
-| (bu commit) | F4 | feat(web): web arayüzü + POST /api/text + CSP |
+| 14d508f | F4 | feat(web): web arayüzü + POST /api/text + CSP (dev + main push) |
 
 ## 11. Ortam / cihaz notları
 
@@ -203,9 +203,6 @@ lib/
 
 ## 12. İŞLEM GÜNLÜĞÜ (her iş 1 satır, en yeni altta)
 <!-- format: YYYY-MM-DD HH:mm | hash/commitlenmedi | iş | kod: dosyalar | test: dosyalar | analyze/test | sonuç -->
-<!-- 2026-10-09 20:40 | commitlenmedi | docs/kurulum | kod: yok | özet + AJAN_IS + AJAN_ANALIZ + FAZLAR oluşturuldu -->
-<!-- 2026-10-09 20:33 | b52ff2e | F0 repo kurulumu | kod: .gitignore (+imza/ajan satırları), CLAUDE.md (ignore) | test: yok | analyze/test: — | dev branch, ilk commit; platform klasörleri + pubspec.lock + .metadata da (değiştirilmeden) eklendi, temiz ağaç için -->
-<!-- 2026-10-09 20:38 | 1375142 | F1 iskelet | kod: main.dart, app.dart, core/constants.dart, core/log.dart, state/server_controller.dart, ui/screens/home_screen.dart, README; widget_test.dart silindi | test: home_screen_test(+1), log_test(+2) | analyze/test: OK | demo kaldırıldı, Provider iskeleti kuruldu -->
-<!-- 2026-10-09 20:43 | d3d42d4 | F2 ağ servisi | kod: core/lan_ip.dart, services/network_service.dart, state/server_controller.dart, ui/screens/home_screen.dart, core/constants.dart, main.dart | test: pick_lan_ip_test(+9), network_service_test(+2), home_screen_test(+2) | analyze/test: OK (16) | K6 kararı; manifest değişmedi -->
+<!-- 2026-10-09 20:33–20:43 | b52ff2e, 1375142, d3d42d4 | docs kurulumu + F0 repo + F1 iskelet + F2 ağ servisi | ayrıntı: §3, §7 (K6), §10 | analyze/test: OK (16) -->
 <!-- 2026-10-09 20:56 | 5af0001 | F3 HTTP sunucu | kod: core/{errors,safe_name,secrets,constants}, server/*, services/{server,storage}_service, state/server_controller, ui/home_screen | test: safe_name(+9) unique_name(+5) secrets(+3) server_controller(+3) auth(+9) files_handler(+12) roundtrip(+7) | analyze/test: OK (64) | mime kopma hatası _BodyGuard ile çözüldü; K7, K8 -->
-<!-- 2026-10-09 21:02 | (bu commit) | F4 web arayüzü | kod: server/web_ui.dart, server/handlers/text_handler.dart, server/router.dart, core/format.dart, core/constants.dart | test: format_size(+1) web_ui(+5) text_handler(+8) | analyze/test: OK (78); JS node --check OK, formatSize JS=Dart | K9 -->
+<!-- 2026-10-09 21:02 | 14d508f | F4 web arayüzü | kod: server/web_ui.dart, server/handlers/text_handler.dart, server/router.dart, core/format.dart, core/constants.dart | test: format_size(+1) web_ui(+5) text_handler(+8) | analyze/test: OK (78); JS node --check OK, formatSize JS=Dart | K9 -->
