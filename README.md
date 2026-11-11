@@ -6,7 +6,7 @@
   <img alt="Flutter" src="https://img.shields.io/badge/Flutter-Dart%203.13-02569B?logo=flutter&logoColor=white">
   <img alt="Platform" src="https://img.shields.io/badge/platform-Android-3DDC84?logo=android&logoColor=white">
   <img alt="Sunucu" src="https://img.shields.io/badge/sunucu-shelf-0f766e">
-  <img alt="Durum" src="https://img.shields.io/badge/durum-geli%C5%9Ftiriliyor%20(F3%2F8)-f59e0b">
+  <img alt="Durum" src="https://img.shields.io/badge/durum-v1.0%20(8%2F8%20faz)-16a34a">
 </p>
 
 # Local Drop
@@ -19,6 +19,20 @@
 - 📦 **Büyük dosyalar.** Yüklemeler RAM'e alınmadan doğrudan diske akar (tek dosya 4 GB'a kadar).
 
 > **Neden?** Kendine WhatsApp'tan dosya göndermek, kablo aramak ya da bir dosya için buluta yükleyip indirmek yerine: *aç → okut → bırak.*
+
+## Özellikler
+
+| | Özellik | Ayrıntı |
+|---|---|---|
+| 💻 → 📱 | **Bilgisayardan telefona** | Tarayıcıda sürükle-bırak, çoklu dosya, dosya başına ilerleme çubuğu, hız ve kalan süre |
+| 📱 → 💻 | **Telefondan bilgisayara** | Uygulamada *Bilgisayara gönder* ile dosya seç; tarayıcıdaki listeden indir |
+| 📝 | **Metin gönderme** | Link veya notu tarayıcıdan telefona gönder; telefonda tek dokunuşla panoya kopyala |
+| 📂 | **İndirilenler klasörü** | Gelen dosyalar `Download/LocalDrop` klasörüne kaydedilir; Dosyalar ve Galeri uygulamalarında görünür |
+| 🔳 | **QR ile bağlanma** | Adres ve tek seferlik token QR'da; QR okutulamazsa 6 haneli PIN ile `/login` |
+| 🌙 | **Arka planda çalışma** | Ön plan servisi + kalıcı bildirim (*Durdur* butonu); ekran kilitliyken de aktarım sürer |
+| 🔄 | **Ağ değişimine dayanıklı** | Wi-Fi değişince sunucu yeni IP ve yeni QR ile kendini yeniden başlatır |
+| ⏱️ | **Otomatik durdurma** | Belirlenen süre (varsayılan 15 dk) transfer olmazsa sunucu kapanır |
+| ⚙️ | **Ayarlar** | Port, otomatik durdurma süresi, tema (açık/koyu/sistem); ilk açılışta 3 adımlı tanıtım |
 
 ---
 
@@ -41,7 +55,7 @@
   <img src="docs/images/screens.svg" alt="Mobil ekran ve tarayıcı arayüzü taslağı" width="100%">
 </p>
 
-> Görseller **hedef tasarım** taslağıdır. Tarayıcı arayüzü F4, QR'lı mobil ekran F5 ile tamamlanacak. Gerçek ekran görüntüleri o fazlardan sonra eklenecek.
+> Görseller arayüzün **temsili çizimidir**; gerçek ekranlarla birebir aynı değildir.
 
 ---
 
@@ -61,6 +75,18 @@ Uygulama tek bir Flutter süreci içinde iki parçadan oluşur:
 | Sunucu | `lib/services/server_service.dart` | `shelf_io` ile `0.0.0.0` üzerinde dinler, token/PIN üretir, `ServerEvent` akışı yayınlar. |
 | İstek hattı | `lib/server/` | `errorMiddleware → authMiddleware → shelf_router → handler` |
 | Depolama | `lib/services/storage_service.dart` | Dosya adlarını temizler; tüm yollar `resolve()` üzerinden, kök klasör dışına çıkamaz. |
+| Arka plan | `lib/services/background_service.dart` | Ön plan servisi ve bildirim; uygulama kaydırılsa da sunucu çalışır. |
+| Native köprü | `android/.../DeviceChannel.kt` | CPU + Wi-Fi kilidi (yalnız transfer sürerken), MediaStore ile `Download/LocalDrop`'a kayıt. |
+
+### Dosyalar nereye kaydedilir?
+
+| Android sürümü | Konum | Uygulama ve tarayıcı listesinde |
+|---|---|---|
+| 11 ve üstü | `Dahili depolama/Download/LocalDrop/` | Görünür; açma, indirme ve silme buradan çalışır |
+| 10 | `Dahili depolama/Download/LocalDrop/` | Görünmez; dosyaya Dosyalar uygulamasından ulaşılır |
+| 9 ve altı | Uygulamaya özel klasör | Görünür (Dosyalar uygulamasında görünmez) |
+
+Yükleme sürerken veri uygulama klasöründe gizli bir `.part` dosyasına yazılır. Yükleme bitince dosya MediaStore üzerinden `Download/LocalDrop`'a taşınır; yarım dosyalar hiçbir zaman İndirilenler'de görünmez. Depolama izni (`MANAGE_EXTERNAL_STORAGE`) istenmez. Varsayılan kayıt yeri İndirilenler'dir; istenirse Ayarlar'dan uygulama klasörüne çevrilebilir.
 
 ### Bir dosya yüklemesi adım adım
 
@@ -102,11 +128,13 @@ sequenceDiagram
 | Risk | Önlem |
 |---|---|
 | Aynı ağdaki başka biri erişirse | Her başlatmada 16 karakterlik rastgele token (`Random.secure`). Token'sız her istek `401`. |
-| Token tahmini | Sabit zamanlı karşılaştırma. Yanlış token için IP başına dakikada 10 deneme sınırı (F7). |
+| Token tahmini | Sabit zamanlı karşılaştırma. Yanlış token/PIN için IP başına dakikada 10 deneme; aşılırsa `429` + `Retry-After`. |
+| Eski oturum | Sunucu yeniden başlayınca tarayıcıdaki eski cookie silinir ve `/login`'e yönlendirilir; hatalı deneme sayılmaz. |
 | Path traversal (`../../`) | `safeName()` ayırıcıları ve `..`'yı temizler; `StorageService.resolve()` kök dışındaki yolu reddeder. |
 | Yarım kalan yükleme | Veri önce `.part` dosyasına yazılır. Bağlantı koparsa silinir; tamamlanınca yeniden adlandırılır. |
 | Bellek taşması | Yükleme ve indirme akış (stream) ile yapılır; dosya belleğe alınmaz. |
-| XSS (F4) | Web arayüzünde kullanıcı verisi yalnızca `textContent` ile basılır; harici CDN yok; CSP başlığı. |
+| Disk dolu | `507 Telefonda yer yok`; yarım dosya silinir. |
+| XSS | Web arayüzünde kullanıcı verisi yalnızca `textContent` ile basılır; harici CDN yok; CSP başlığı. |
 | Dışarıya veri sızması | Uygulama hiçbir dış sunucuya istek atmaz; analytics ve telemetri yok. |
 
 > ⚠️ Sunucu şifresiz HTTP kullanır. Yalnızca güvendiğin ağlarda (ev, kişisel hotspot) kullan. Misafir ağlarda "client isolation" nedeniyle bağlantı zaten kurulamayabilir.
@@ -125,7 +153,7 @@ Tüm uçlar token ister (`?t=<token>` veya `ld_token` cookie'si). `/login` hari�
 | `POST` | `/api/upload` | `multipart/form-data` yükleme |
 | `GET` | `/api/download/<ad>` | Dosyayı indir (`Content-Disposition: attachment`) |
 | `DELETE` | `/api/files/<ad>` | Dosyayı sil |
-| `POST` | `/api/text` | Telefona metin gönder (F4) |
+| `POST` | `/api/text` | Telefona metin gönder (≤ 64 KB) |
 
 Tarayıcı olmadan, PowerShell ile denemek için:
 
@@ -149,6 +177,15 @@ flutter pub get
 flutter run            # USB ile bağlı Android cihazda
 ```
 
+**APK üretmek**
+
+```powershell
+flutter build apk --release        # build\app\outputs\flutter-apk\app-release.apk
+flutter build appbundle --release  # Play Store için .aab
+```
+
+`android/key.properties` yoksa release derlemesi debug anahtarıyla imzalanır (yalnız kişisel kullanım için). Play Store hazırlığı: [`docs/play_store.md`](docs/play_store.md).
+
 > Emülatör kendi sanal ağını kullandığı için (`10.0.2.x`) bilgisayardan erişilemez. Gerçek cihazda test et.
 
 **Testler**
@@ -158,7 +195,7 @@ flutter analyze
 flutter test           # birim + handler + yerel entegrasyon (gerçek sunucu 127.0.0.1'de)
 ```
 
-Entegrasyon testleri 50 MB akış yüklemesini sha256 ile doğrular, kopan bağlantıda `.part` kalmadığını, 5 eşzamanlı yüklemeyi ve dolu port durumunu kontrol eder.
+Entegrasyon testleri 50 MB akış yüklemesini bayt bayt doğrular; kopan bağlantıda `.part` kalmadığını, 5 eşzamanlı yüklemeyi, dolu portu ve kötüye kullanım isteklerini (`%2e%2e`, çift kodlama, mutlak yol, NUL) kontrol eder. `lib/services` + `lib/server` satır kapsaması %85.
 
 ---
 
@@ -170,11 +207,13 @@ Entegrasyon testleri 50 MB akış yüklemesini sha256 ile doğrular, kopan bağl
 | F1 | Flutter iskeleti, Provider | ✅ |
 | F2 | Wi-Fi / hotspot IP tespiti | ✅ |
 | F3 | HTTP sunucu, token/PIN, yükleme/indirme/silme | ✅ |
-| F4 | Tarayıcı arayüzü (sürükle-bırak, ilerleme, metin) | ⏳ |
-| F5 | Mobil arayüz (QR, dosya listesi, telefondan gönderme) | ⏳ |
-| F6 | Arka planda çalışma (foreground service), İndirilenler klasörü | ⏳ |
-| F7 | Rate limit, disk dolu, ağ değişiminde yeniden başlatma | ⏳ |
-| F8 | İkon, onboarding, ayarlar, yayın hazırlığı | ⏳ |
+| F4 | Tarayıcı arayüzü (sürükle-bırak, ilerleme, metin) | ✅ |
+| F5 | Mobil arayüz (QR, dosya listesi, telefondan gönderme) | ✅ |
+| F6 | Arka planda çalışma (ön plan servisi), İndirilenler klasörü | ✅ |
+| F7 | Rate limit, disk dolu, ağ değişiminde yeniden başlatma | ✅ |
+| F8 | İkon, onboarding, ayarlar, yayın hazırlığı | ✅ |
+
+Sıradaki: cihaz üzerinde uçtan uca doğrulamalar ([`docs/PROJE_OZET.md`](docs/PROJE_OZET.md) §9), gerçek ekran görüntüleri, Play Store yayını.
 
 ---
 
@@ -183,25 +222,28 @@ Entegrasyon testleri 50 MB akış yüklemesini sha256 ile doğrular, kopan bağl
 ```text
 lib/
 ├── main.dart, app.dart
-├── core/       sabitler, log, hata tipleri, safe_name, secrets (token/PIN), lan_ip
-├── services/   network_service, server_service, storage_service
-├── server/     router, auth_middleware, handlers/ (login, files, upload)
-├── state/      server_controller
-└── ui/         screens/
+├── core/       sabitler, log, hata tipleri, safe_name, secrets (token/PIN), lan_ip, wakelock_policy
+├── services/   network, server, storage, storage_target, background, device_channel, settings, file_actions
+├── server/     router, auth_middleware, rate_limiter, web_ui, handlers/ (login, files, upload, text)
+├── state/      server_controller, network_restart_policy, auto_stop_policy
+└── ui/         screens/ (home, settings, onboarding), widgets/ (status_card, files_panel, text_banner)
 test/
 ├── unit/        saf fonksiyonlar
 ├── server/      handler testleri (ağ açmadan)
-└── integration/ gerçek sunucu ile uçtan uca
+├── integration/ gerçek sunucu ile uçtan uca
+├── ui/          widget testleri
+└── fakes/       sahte servisler
 docs/
 ├── PROJE_OZET.md   güncel durum (tek giriş noktası)
 ├── FAZLAR.md       faz görevleri ve test senaryoları
 ├── AJAN_IS.md      geliştirme ajanı kuralları
+├── play_store.md   izin gerekçeleri, Data Safety, yayın adımları
 └── images/         README görselleri
 ```
 
 ## Geliştirme
 
-Proje, faz faz bir yapay zekâ kodlama ajanıyla geliştiriliyor. Kurallar ve süreç:
+Proje, 8 faz halinde bir yapay zekâ kodlama ajanıyla geliştirildi. Kurallar ve süreç:
 
 - [`docs/AJAN_IS.md`](docs/AJAN_IS.md) — her işte geçerli kod, test, git ve token kuralları
 - [`docs/FAZLAR.md`](docs/FAZLAR.md) — fazların kapsamı ve T1–T5 test senaryoları
