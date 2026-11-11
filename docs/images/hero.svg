@@ -1,89 +1,188 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" width="1200" height="420" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" xmlns:c2pa="http://c2pa.org/manifest"><metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTpiNWU3OTU0OC1jYzliLTRhYjYtYjM1ZC02MTI4ZTg1M2RjZjcAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaNljEVGlRth25PaoHV0OPsEAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDpjMGY2ZmI4Yy1kNDg4LTQxMmMtYjFiZS0xZDgzYzU0NmMyOWJscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNoeJozIvS2G0gLvb1bN0AdLQAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggexV2ws4Z4ntWsocIhQLFMTLqphbnJW0aCIKmFJikd5ikZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaLBCinKrpJ91EGvxwwSNfgkAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRNAAAAAAAAAAAAAAAAAGRoYXNoWCAEQAWuP4g0jnCeK8SupPtEwoRMZ0GFZ54wVxxcyBGcRGRuYW1lbmp1bWJmIG1hbmlmZXN0amV4Y2x1c2lvbnOBomVzdGFydBjVZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOmI1ZTc5NTQ4LWNjOWItNGFiNi1iMzVkLTYxMjhlODUzZGNmNy9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOjI2NmI3ZjNhLWYwOWYtNDRjNC1iMjJlLTJlY2IyZTM1YzkyOXJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCB7FXbCzhnie1ayhwiFAsUxMuqmFuclbRoIgqYUmKR3mKJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFgg/sg0l0Ecx4yS/qBlvKtlqwOt4ZGuYGCOWH8QCEtMfO6iY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFgga+r/oTWLKdppNVRYlcaLZBEYnwocsmkQ/jkAfDxkNgF0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQPNIwYk8o0NipyMDFABPIKlR9dK8Xk1OQnMSWerdKOGQ/P4HUd58FZH/CNfuCfWOs/hl+51AuLFAgih501rO2xc=</c2pa:manifest></metadata>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" width="100%" height="100%" xmlns:c2pa="http://c2pa.org/manifest">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0f766e"/>
-      <stop offset="1" stop-color="#134e4a"/>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#03130F"/><stop offset="55%" stop-color="#062420"/><stop offset="100%" stop-color="#0A3A33"/>
     </linearGradient>
-    <linearGradient id="screen" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#f0fdfa"/>
-      <stop offset="1" stop-color="#ccfbf1"/>
+    <linearGradient id="card" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0F2A26" stop-opacity="0.96"/><stop offset="100%" stop-color="#081A17" stop-opacity="0.98"/>
     </linearGradient>
+    <filter id="sh" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000" flood-opacity="0.5"/></filter>
   </defs>
   <rect width="1200" height="420" rx="24" fill="url(#bg)"/>
-  <g fill="#ffffff" opacity="0.05">
-    <circle cx="1100" cy="40" r="160"/>
-    <circle cx="80" cy="400" r="120"/>
+  <circle cx="1010" cy="100" r="230" fill="#14B8A6" opacity="0.07"/>
+  <circle cx="150" cy="370" r="180" fill="#2DD4BF" opacity="0.05"/>
+
+  <g transform="translate(64,68)" font-family="Segoe UI, Roboto, sans-serif">
+    <rect width="350" height="34" rx="17" fill="#0C3531" stroke="#14B8A6" stroke-opacity="0.45"/>
+    <circle cx="20" cy="17" r="5" fill="#2DD4BF"/>
+    <text x="34" y="22" font-size="13" font-weight="600" fill="#99F6E4">İNTERNETSİZ • KURULUMSUZ • ANDROID</text>
+    <text y="96" font-size="52" font-weight="800" fill="#FFFFFF" letter-spacing="-0.5">Local Drop</text>
+    <text y="142" font-size="21" fill="#CCFBF1">Telefonunu aynı <tspan fill="#2DD4BF" font-weight="700">Wi-Fi</tspan>'daki bilgisayar için dosya sunucusu yap;</text>
+    <text y="172" font-size="21" fill="#CCFBF1">tarayıcıdan sürükle-bırak gönder, tek tıkla indir.</text>
+    <g transform="translate(0,212)" font-size="14" font-weight="600" fill="#F0FDFA" text-anchor="middle">
+      <rect width="170" height="42" rx="12" fill="#0A2B27" stroke="#14B8A6" stroke-opacity="0.35"/><text x="85" y="26">🔐 QR + PIN Giriş</text>
+      <rect x="185" width="190" height="42" rx="12" fill="#0A2B27" stroke="#14B8A6" stroke-opacity="0.35"/><text x="280" y="26">📦 4 GB Akışla Aktarım</text>
+      <rect x="390" width="190" height="42" rx="12" fill="#0A2B27" stroke="#14B8A6" stroke-opacity="0.35"/><text x="485" y="26">📂 Download/LocalDrop</text>
+    </g>
+    <text y="286" font-family="Segoe UI, Roboto, monospace" font-size="13" fill="#5EEAD4" opacity="0.9">Flutter 3 • Provider • shelf + shelf_router • flutter_foreground_task • MediaStore • qr_flutter</text>
   </g>
 
-  <!-- Title -->
-  <text x="600" y="78" text-anchor="middle" font-size="52" font-weight="700" fill="#ffffff">Local Drop</text>
-  <text x="600" y="116" text-anchor="middle" font-size="20" fill="#99f6e4">Telefon ↔ Bilgisayar · Aynı Wi-Fi · Kablo yok · İnternet yok · Hesap yok</text>
-
-  <!-- Phone -->
-  <g transform="translate(170,150)">
-    <rect x="0" y="0" width="150" height="250" rx="22" fill="#0b1f1d" stroke="#5eead4" stroke-width="2"/>
-    <rect x="10" y="16" width="130" height="218" rx="12" fill="url(#screen)"/>
-    <rect x="58" y="6" width="34" height="5" rx="2.5" fill="#334155"/>
-    <text x="75" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#0f766e">Local Drop</text>
-    <!-- QR -->
-    <g transform="translate(35,52)">
-      <rect width="80" height="80" rx="6" fill="#ffffff" stroke="#99f6e4"/>
-      <g fill="#0f172a">
-        <rect x="8" y="8" width="20" height="20"/><rect x="12" y="12" width="12" height="12" fill="#fff"/><rect x="15" y="15" width="6" height="6"/>
-        <rect x="52" y="8" width="20" height="20"/><rect x="56" y="12" width="12" height="12" fill="#fff"/><rect x="59" y="15" width="6" height="6"/>
-        <rect x="8" y="52" width="20" height="20"/><rect x="12" y="56" width="12" height="12" fill="#fff"/><rect x="15" y="59" width="6" height="6"/>
-        <rect x="34" y="10" width="6" height="6"/><rect x="42" y="18" width="6" height="6"/><rect x="34" y="34" width="6" height="6"/>
-        <rect x="46" y="38" width="6" height="6"/><rect x="58" y="36" width="6" height="6"/><rect x="38" y="48" width="6" height="6"/>
-        <rect x="54" y="52" width="6" height="6"/><rect x="64" y="60" width="6" height="6"/><rect x="44" y="62" width="6" height="6"/>
-        <rect x="34" y="58" width="4" height="4"/><rect x="60" y="46" width="4" height="4"/><rect x="10" y="38" width="6" height="6"/><rect x="20" y="42" width="4" height="4"/>
+  <g transform="translate(760,44)" filter="url(#sh)" font-family="Segoe UI, Roboto, sans-serif">
+    <rect width="372" height="332" rx="22" fill="url(#card)" stroke="#14B8A6" stroke-opacity="0.3"/>
+    <circle cx="30" cy="33" r="5" fill="#4ADE80"/>
+    <text x="42" y="38" font-size="14" font-weight="700" fill="#99F6E4">Sunucu çalışıyor</text>
+    <text x="348" y="38" font-size="12" fill="#5EEAD4" text-anchor="end">aynı Wi-Fi</text>
+    <g transform="translate(24,58)">
+      <rect width="138" height="138" rx="10" fill="#FFFFFF"/>
+      <g transform="translate(6,6)">
+        <rect x="0" y="0" width="42" height="42" fill="#0F172A"/>
+        <rect x="6" y="6" width="30" height="30" fill="#FFFFFF"/>
+        <rect x="12" y="12" width="18" height="18" fill="#0F172A"/>
+        <rect x="84" y="0" width="42" height="42" fill="#0F172A"/>
+        <rect x="90" y="6" width="30" height="30" fill="#FFFFFF"/>
+        <rect x="96" y="12" width="18" height="18" fill="#0F172A"/>
+        <rect x="0" y="84" width="42" height="42" fill="#0F172A"/>
+        <rect x="6" y="90" width="30" height="30" fill="#FFFFFF"/>
+        <rect x="12" y="96" width="18" height="18" fill="#0F172A"/>
+        <rect x="0" y="48" width="6" height="6" fill="#0F172A"/>
+        <rect x="0" y="54" width="6" height="6" fill="#0F172A"/>
+        <rect x="0" y="66" width="6" height="6" fill="#0F172A"/>
+        <rect x="6" y="48" width="6" height="6" fill="#0F172A"/>
+        <rect x="6" y="54" width="6" height="6" fill="#0F172A"/>
+        <rect x="6" y="66" width="6" height="6" fill="#0F172A"/>
+        <rect x="6" y="72" width="6" height="6" fill="#0F172A"/>
+        <rect x="12" y="48" width="6" height="6" fill="#0F172A"/>
+        <rect x="12" y="54" width="6" height="6" fill="#0F172A"/>
+        <rect x="12" y="60" width="6" height="6" fill="#0F172A"/>
+        <rect x="12" y="72" width="6" height="6" fill="#0F172A"/>
+        <rect x="18" y="48" width="6" height="6" fill="#0F172A"/>
+        <rect x="18" y="72" width="6" height="6" fill="#0F172A"/>
+        <rect x="24" y="54" width="6" height="6" fill="#0F172A"/>
+        <rect x="24" y="66" width="6" height="6" fill="#0F172A"/>
+        <rect x="24" y="72" width="6" height="6" fill="#0F172A"/>
+        <rect x="30" y="48" width="6" height="6" fill="#0F172A"/>
+        <rect x="30" y="54" width="6" height="6" fill="#0F172A"/>
+        <rect x="30" y="66" width="6" height="6" fill="#0F172A"/>
+        <rect x="36" y="54" width="6" height="6" fill="#0F172A"/>
+        <rect x="36" y="66" width="6" height="6" fill="#0F172A"/>
+        <rect x="36" y="72" width="6" height="6" fill="#0F172A"/>
+        <rect x="42" y="48" width="6" height="6" fill="#0F172A"/>
+        <rect x="42" y="60" width="6" height="6" fill="#0F172A"/>
+        <rect x="42" y="66" width="6" height="6" fill="#0F172A"/>
+        <rect x="48" y="6" width="6" height="6" fill="#0F172A"/>
+        <rect x="48" y="24" width="6" height="6" fill="#0F172A"/>
+        <rect x="48" y="54" width="6" height="6" fill="#0F172A"/>
+        <rect x="48" y="66" width="6" height="6" fill="#0F172A"/>
+        <rect x="48" y="72" width="6" height="6" fill="#0F172A"/>
+        <rect x="48" y="84" width="6" height="6" fill="#0F172A"/>
+        <rect x="48" y="96" width="6" height="6" fill="#0F172A"/>
+        <rect x="54" y="0" width="6" height="6" fill="#0F172A"/>
+        <rect x="54" y="54" width="6" height="6" fill="#0F172A"/>
+        <rect x="54" y="84" width="6" height="6" fill="#0F172A"/>
+        <rect x="54" y="90" width="6" height="6" fill="#0F172A"/>
+        <rect x="54" y="102" width="6" height="6" fill="#0F172A"/>
+        <rect x="54" y="114" width="6" height="6" fill="#0F172A"/>
+        <rect x="54" y="120" width="6" height="6" fill="#0F172A"/>
+        <rect x="60" y="0" width="6" height="6" fill="#0F172A"/>
+        <rect x="60" y="12" width="6" height="6" fill="#0F172A"/>
+        <rect x="60" y="18" width="6" height="6" fill="#0F172A"/>
+        <rect x="60" y="24" width="6" height="6" fill="#0F172A"/>
+        <rect x="60" y="36" width="6" height="6" fill="#0F172A"/>
+        <rect x="60" y="42" width="6" height="6" fill="#0F172A"/>
+        <rect x="60" y="72" width="6" height="6" fill="#0F172A"/>
+        <rect x="60" y="78" width="6" height="6" fill="#0F172A"/>
+        <rect x="60" y="84" width="6" height="6" fill="#0F172A"/>
+        <rect x="60" y="102" width="6" height="6" fill="#0F172A"/>
+        <rect x="60" y="108" width="6" height="6" fill="#0F172A"/>
+        <rect x="60" y="114" width="6" height="6" fill="#0F172A"/>
+        <rect x="60" y="120" width="6" height="6" fill="#0F172A"/>
+        <rect x="66" y="12" width="6" height="6" fill="#0F172A"/>
+        <rect x="66" y="18" width="6" height="6" fill="#0F172A"/>
+        <rect x="66" y="24" width="6" height="6" fill="#0F172A"/>
+        <rect x="66" y="30" width="6" height="6" fill="#0F172A"/>
+        <rect x="66" y="72" width="6" height="6" fill="#0F172A"/>
+        <rect x="66" y="102" width="6" height="6" fill="#0F172A"/>
+        <rect x="66" y="108" width="6" height="6" fill="#0F172A"/>
+        <rect x="66" y="114" width="6" height="6" fill="#0F172A"/>
+        <rect x="72" y="0" width="6" height="6" fill="#0F172A"/>
+        <rect x="72" y="6" width="6" height="6" fill="#0F172A"/>
+        <rect x="72" y="12" width="6" height="6" fill="#0F172A"/>
+        <rect x="72" y="18" width="6" height="6" fill="#0F172A"/>
+        <rect x="72" y="24" width="6" height="6" fill="#0F172A"/>
+        <rect x="72" y="30" width="6" height="6" fill="#0F172A"/>
+        <rect x="72" y="36" width="6" height="6" fill="#0F172A"/>
+        <rect x="72" y="42" width="6" height="6" fill="#0F172A"/>
+        <rect x="72" y="48" width="6" height="6" fill="#0F172A"/>
+        <rect x="72" y="54" width="6" height="6" fill="#0F172A"/>
+        <rect x="72" y="60" width="6" height="6" fill="#0F172A"/>
+        <rect x="72" y="78" width="6" height="6" fill="#0F172A"/>
+        <rect x="72" y="84" width="6" height="6" fill="#0F172A"/>
+        <rect x="72" y="90" width="6" height="6" fill="#0F172A"/>
+        <rect x="72" y="96" width="6" height="6" fill="#0F172A"/>
+        <rect x="72" y="102" width="6" height="6" fill="#0F172A"/>
+        <rect x="78" y="54" width="6" height="6" fill="#0F172A"/>
+        <rect x="78" y="60" width="6" height="6" fill="#0F172A"/>
+        <rect x="78" y="66" width="6" height="6" fill="#0F172A"/>
+        <rect x="78" y="72" width="6" height="6" fill="#0F172A"/>
+        <rect x="78" y="84" width="6" height="6" fill="#0F172A"/>
+        <rect x="78" y="90" width="6" height="6" fill="#0F172A"/>
+        <rect x="78" y="108" width="6" height="6" fill="#0F172A"/>
+        <rect x="78" y="120" width="6" height="6" fill="#0F172A"/>
+        <rect x="84" y="72" width="6" height="6" fill="#0F172A"/>
+        <rect x="84" y="78" width="6" height="6" fill="#0F172A"/>
+        <rect x="84" y="84" width="6" height="6" fill="#0F172A"/>
+        <rect x="84" y="108" width="6" height="6" fill="#0F172A"/>
+        <rect x="84" y="114" width="6" height="6" fill="#0F172A"/>
+        <rect x="90" y="78" width="6" height="6" fill="#0F172A"/>
+        <rect x="90" y="90" width="6" height="6" fill="#0F172A"/>
+        <rect x="90" y="96" width="6" height="6" fill="#0F172A"/>
+        <rect x="90" y="102" width="6" height="6" fill="#0F172A"/>
+        <rect x="90" y="108" width="6" height="6" fill="#0F172A"/>
+        <rect x="90" y="114" width="6" height="6" fill="#0F172A"/>
+        <rect x="96" y="54" width="6" height="6" fill="#0F172A"/>
+        <rect x="96" y="78" width="6" height="6" fill="#0F172A"/>
+        <rect x="96" y="84" width="6" height="6" fill="#0F172A"/>
+        <rect x="96" y="90" width="6" height="6" fill="#0F172A"/>
+        <rect x="96" y="96" width="6" height="6" fill="#0F172A"/>
+        <rect x="96" y="102" width="6" height="6" fill="#0F172A"/>
+        <rect x="102" y="66" width="6" height="6" fill="#0F172A"/>
+        <rect x="102" y="102" width="6" height="6" fill="#0F172A"/>
+        <rect x="102" y="114" width="6" height="6" fill="#0F172A"/>
+        <rect x="108" y="54" width="6" height="6" fill="#0F172A"/>
+        <rect x="108" y="60" width="6" height="6" fill="#0F172A"/>
+        <rect x="108" y="78" width="6" height="6" fill="#0F172A"/>
+        <rect x="108" y="84" width="6" height="6" fill="#0F172A"/>
+        <rect x="108" y="90" width="6" height="6" fill="#0F172A"/>
+        <rect x="108" y="108" width="6" height="6" fill="#0F172A"/>
+        <rect x="114" y="54" width="6" height="6" fill="#0F172A"/>
+        <rect x="114" y="66" width="6" height="6" fill="#0F172A"/>
+        <rect x="114" y="72" width="6" height="6" fill="#0F172A"/>
+        <rect x="114" y="102" width="6" height="6" fill="#0F172A"/>
+        <rect x="114" y="120" width="6" height="6" fill="#0F172A"/>
+        <rect x="120" y="48" width="6" height="6" fill="#0F172A"/>
+        <rect x="120" y="54" width="6" height="6" fill="#0F172A"/>
+        <rect x="120" y="60" width="6" height="6" fill="#0F172A"/>
+        <rect x="120" y="72" width="6" height="6" fill="#0F172A"/>
+        <rect x="120" y="78" width="6" height="6" fill="#0F172A"/>
+        <rect x="120" y="84" width="6" height="6" fill="#0F172A"/>
+        <rect x="120" y="96" width="6" height="6" fill="#0F172A"/>
+        <rect x="120" y="120" width="6" height="6" fill="#0F172A"/>
       </g>
     </g>
-    <text x="75" y="152" text-anchor="middle" font-size="9.5" fill="#134e4a" font-family="Consolas, monospace">192.168.1.50:8080</text>
-    <text x="75" y="168" text-anchor="middle" font-size="10" fill="#334155">PIN  4 8 1 2 0 7</text>
-    <rect x="30" y="188" width="90" height="28" rx="14" fill="#0f766e"/>
-    <text x="75" y="206" text-anchor="middle" font-size="11" font-weight="600" fill="#ffffff">Durdur</text>
-  </g>
-  <text x="245" y="415" text-anchor="middle" font-size="13" fill="#ccfbf1" opacity="0">.</text>
-
-  <!-- Wi-Fi link -->
-  <g transform="translate(600,270)">
-    <path d="M-220 0 C -120 -70, 120 -70, 220 0" fill="none" stroke="#5eead4" stroke-width="3" stroke-dasharray="10 9" stroke-linecap="round"/>
-    <path d="M-220 30 C -120 90, 120 90, 220 30" fill="none" stroke="#99f6e4" stroke-width="3" stroke-dasharray="10 9" stroke-linecap="round" opacity="0.7"/>
-    <polygon points="214,-8 230,2 212,10" fill="#5eead4"/>
-    <polygon points="-212,22 -230,30 -214,40" fill="#99f6e4" opacity="0.8"/>
-    <!-- wifi icon -->
-    <g transform="translate(0,-10)" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round">
-      <path d="M-26 -8 A 37 37 0 0 1 26 -8"/>
-      <path d="M-16 2 A 23 23 0 0 1 16 2"/>
-      <circle cx="0" cy="12" r="3.5" fill="#ffffff" stroke="none"/>
+    <g transform="translate(178,62)">
+      <rect width="170" height="56" rx="12" fill="#0B2522"/>
+      <text x="14" y="22" font-size="12" fill="#5EEAD4">adres</text>
+      <text x="14" y="42" font-family="Consolas, monospace" font-size="13" font-weight="600" fill="#F0FDFA">192.168.1.50:8080</text>
+      <rect y="68" width="170" height="56" rx="12" fill="#0B2522"/>
+      <text x="14" y="90" font-size="12" fill="#5EEAD4">PIN</text>
+      <text x="14" y="112" font-size="20" font-weight="700" letter-spacing="4" fill="#F0FDFA">481207</text>
     </g>
-    <text x="0" y="36" text-anchor="middle" font-size="14" font-weight="600" fill="#ffffff">Yerel ağ (LAN)</text>
-    <!-- file chips -->
-    <g transform="translate(-95,-62)">
-      <rect width="62" height="24" rx="12" fill="#ffffff"/>
-      <text x="31" y="16.5" text-anchor="middle" font-size="11" fill="#0f766e" font-weight="600">foto.jpg</text>
-    </g>
-    <g transform="translate(40,62)">
-      <rect width="62" height="24" rx="12" fill="#ffffff"/>
-      <text x="31" y="16.5" text-anchor="middle" font-size="11" fill="#0f766e" font-weight="600">rapor.pdf</text>
-    </g>
+    <text x="24" y="232" font-size="13" font-weight="700" fill="#CCFBF1">Alınıyor</text>
+    <text x="348" y="232" font-size="12" fill="#5EEAD4" text-anchor="end">%67 • 41,6 MB/s • kalan 9 sn</text>
+    <text x="24" y="256" font-size="13" fill="#F0FDFA">tatil_2026.mp4</text>
+    <rect x="24" y="266" width="324" height="10" rx="5" fill="#123A35"/>
+    <rect x="24" y="266" width="217" height="10" rx="5" fill="#2DD4BF"/>
+    <circle cx="30" cy="304" r="4" fill="#4ADE80"/><text x="40" y="308" font-size="12" fill="#99F6E4">rapor_2026.pdf ✓</text>
+    <circle cx="190" cy="304" r="4" fill="#4ADE80"/><text x="200" y="308" font-size="12" fill="#99F6E4">sunum.pptx ✓</text>
   </g>
-
-  <!-- Laptop -->
-  <g transform="translate(830,170)">
-    <rect x="0" y="0" width="240" height="160" rx="10" fill="#0b1f1d" stroke="#5eead4" stroke-width="2"/>
-    <rect x="10" y="10" width="220" height="140" rx="4" fill="#ffffff"/>
-    <rect x="10" y="10" width="220" height="20" rx="4" fill="#e2e8f0"/>
-    <circle cx="22" cy="20" r="3.5" fill="#f87171"/><circle cx="34" cy="20" r="3.5" fill="#fbbf24"/><circle cx="46" cy="20" r="3.5" fill="#34d399"/>
-    <rect x="58" y="14" width="160" height="12" rx="6" fill="#ffffff"/>
-    <text x="64" y="23.5" font-size="8.5" fill="#475569" font-family="Consolas, monospace">http://192.168.1.50:8080</text>
-    <rect x="26" y="40" width="188" height="52" rx="8" fill="#f0fdfa" stroke="#14b8a6" stroke-dasharray="5 4"/>
-    <path d="M120 52 v18 M111 61 l9 -9 l9 9" stroke="#0f766e" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="120" y="84" text-anchor="middle" font-size="9" fill="#0f766e">Dosyaları buraya sürükle</text>
-    <rect x="26" y="102" width="188" height="9" rx="4.5" fill="#e2e8f0"/>
-    <rect x="26" y="102" width="128" height="9" rx="4.5" fill="#14b8a6"/>
-    <rect x="26" y="120" width="120" height="7" rx="3.5" fill="#cbd5e1"/>
-    <rect x="26" y="133" width="90" height="7" rx="3.5" fill="#cbd5e1"/>
-    <path d="M-18 160 h276 l-14 18 h-248 z" fill="#134e4a" stroke="#5eead4" stroke-width="2"/>
-  </g>
-</svg>
+<metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTo4OWIyNDJmMS0wMzA1LTQyMjktOTY3OC02NjVmNGMxYmMxNWIAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaCqHHUZg8BYMXOTnaDa7T3AAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDoxMTNkYjBjMy1lY2M5LTRjOGMtYTM3Yi05MGQ3ZDRhNjk0YWNscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNoJUu1OGiwzn2NssvSvuKlmAAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggdQTMFpL7bVVzPULNBm2eaP/zo4b5SKJCFkAwipZtXu6kZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaJQYsmReylK8Ijj+765aKiYAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRMAAAAAAAAAAAAAAAAZGhhc2hYIEl1ADB9qhKzFGh3lqeL8ApJMKylUwsFT2QYxGBiDEFuZG5hbWVuanVtYmYgbWFuaWZlc3RqZXhjbHVzaW9uc4GiZXN0YXJ0GTMwZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjg5YjI0MmYxLTAzMDUtNDIyOS05Njc4LTY2NWY0YzFiYzE1Yi9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOmQyMTIzMjFjLWM3MGItNGYxMC04YjE0LTcxNDc1ZmUwMmZmYXJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCB1BMwWkvttVXM9Qs0GbZ5o//OjhvlIokIWQDCKlm1e7qJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggU1i9WC5VVboIliheWwEk62B5X12oaaMAMBcqjp0X8k6iY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggFMogVy9s765awYnC5Zr9VqoXjkQCcA2CRW+fuzYZOFZ0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQMtP7BwFW+97wFufkrHdZa6F/FSBUSpD7FgQv6kImlh3n0m2KBdj5C/G2CdYXpNc3o9ZrUYcVEvymnPPsIC+/m4=</c2pa:manifest></metadata></svg>
